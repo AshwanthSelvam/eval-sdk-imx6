@@ -1,0 +1,15 @@
+Index: util-linux-2.19/src/shlibs/mount/src/context_umount.c
+===================================================================
+--- util-linux-2.19.orig/src/shlibs/mount/src/context_umount.c	2011-03-02 09:40:26.013873142 -0600
++++ util-linux-2.19/src/shlibs/mount/src/context_umount.c	2011-03-02 09:41:47.173589010 -0600
+@@ -426,8 +426,10 @@
+ 	if (cxt->flags & MNT_FL_FAKE)
+ 		return 0;
+ 
++#if defined(MNT_DETACH)
+ 	if (cxt->flags & MNT_FL_LAZY)
+ 		rc = umount2(target, MNT_DETACH);
++#endif
+ 
+ 	else if (cxt->flags & MNT_FL_FORCE) {
+ 		rc = umount2(target, MNT_FORCE);

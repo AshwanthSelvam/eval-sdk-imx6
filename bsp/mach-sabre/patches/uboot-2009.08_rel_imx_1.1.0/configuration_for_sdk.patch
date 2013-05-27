@@ -1,0 +1,56 @@
+Index: u-boot-2013.01/src/include/configs/nitrogen6x.h
+===================================================================
+--- u-boot-2013.01.orig/src/include/configs/nitrogen6x.h	2013-05-20 17:21:30.174493095 -0600
++++ u-boot-2013.01/src/include/configs/nitrogen6x.h	2013-05-20 17:23:30.878493559 -0600
+@@ -164,27 +164,41 @@
+ #define CONFIG_LOADADDR			       0x10800000
+ #define CONFIG_SYS_TEXT_BASE	       0x17800000
+ 
++#define CONFIG_CMD_ENV                 /*Enable env command    */
++#define CONFIG_CMD_ASKENV              /*Enable askenv command */
++
+ #define CONFIG_EXTRA_ENV_SETTINGS \
+ 	"console=ttymxc1\0" \
+ 	"clearenv=if sf probe || sf probe || sf probe 1 ; then " \
+ 		"sf erase 0xc0000 0x2000 && " \
+ 		"echo restored environment to factory default ; fi\0" \
+-	"bootcmd=for dtype in sata mmc ; do " \
++		"loadaddr=0x12000000\0" \
++		"loadbootenv=for dtype in sata mmc ; do " \
++			"for disk in 0 1 ; do ${dtype} dev ${disk} ;" \
++				"for fs in fat ; do " \
++					"${fs}load " \
++						"${dtype} ${disk}:1 " \
++						"${loadaddr} " \
++						"/uEnv.txt;" \
++				"done ; " \
++			"done ; " \
++		"done;\0 " \
++	"loaduimage=for dtype in sata mmc ; do " \
+ 			"for disk in 0 1 ; do ${dtype} dev ${disk} ;" \
+ 				"for fs in fat ext2 ; do " \
+ 					"${fs}load " \
+ 						"${dtype} ${disk}:1 " \
+-						"10008000 " \
+-						"/6x_bootscript" \
+-						"&& source 10008000 ; " \
++						"${loadaddr} " \
++						"/uImage;" \
+ 				"done ; " \
+ 			"done ; " \
+-		"done; " \
+-		"setenv stdout serial,vga ; " \
+-		"echo ; echo 6x_bootscript not found ; " \
+-		"echo ; echo serial console at 115200, 8N1 ; echo ; " \
+-		"echo details at http://boundarydevices.com/6q_bootscript ; " \
+-		"setenv stdout serial\0" \
++		"done;\0 " \
++	"importbootenv=echo Importing environment...; env import -t ${loadaddr} ${filesize}\0" \
++	"bootcmd=run loadbootenv ;" \
++			"run importbootenv ; " \
++				"if test -n ${uenvcmd} ; then " \
++					"run uenvcmd; " \
++				"fi ;\0" \
+ 	"upgradeu=for dtype in sata mmc ; do " \
+ 		"for disk in 0 1 ; do ${dtype} dev ${disk} ;" \
+ 		     "for fs in fat ext2 ; do " \

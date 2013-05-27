@@ -1,0 +1,65 @@
+Index: util-linux-2.19/src/misc-utils/cal.c
+===================================================================
+--- util-linux-2.19.orig/src/misc-utils/cal.c	2011-03-02 09:43:23.489487270 -0600
++++ util-linux-2.19/src/misc-utils/cal.c	2011-03-02 09:43:37.237484344 -0600
+@@ -78,7 +78,7 @@
+ #include <ncurses/ncurses.h>
+ #endif
+ 
+-#include <term.h>                       /* include after <curses.h> */
++#include <ncurses/term.h>                       /* include after <curses.h> */
+ 
+ static void
+ my_setupterm(const char *term, int fildes, int *errret) {
+Index: util-linux-2.19/src/misc-utils/setterm.c
+===================================================================
+--- util-linux-2.19.orig/src/misc-utils/setterm.c	2011-03-02 09:43:57.309616126 -0600
++++ util-linux-2.19/src/misc-utils/setterm.c	2011-03-02 09:44:14.937490207 -0600
+@@ -101,7 +101,7 @@
+ #ifndef NCURSES_CONST
+ #define NCURSES_CONST const	/* define before including term.h */
+ #endif
+-#include <term.h>
++#include <ncurses/term.h>
+ 
+ #ifdef HAVE_NCURSES_H
+ #include <ncurses.h>
+Index: util-linux-2.19/src/text-utils/more.c
+===================================================================
+--- util-linux-2.19.orig/src/text-utils/more.c	2011-03-02 09:44:41.629479684 -0600
++++ util-linux-2.19/src/text-utils/more.c	2011-03-02 09:44:50.329605521 -0600
+@@ -181,7 +181,7 @@
+ #endif
+ 
+ #if defined(HAVE_NCURSES_H) || defined(HAVE_NCURSES_NCURSES_H)
+-# include <term.h>			/* include after <curses.h> */
++# include <ncurses/term.h>			/* include after <curses.h> */
+ 
+ static void
+ my_putstring(char *s) {
+Index: util-linux-2.19/src/text-utils/pg.c
+===================================================================
+--- util-linux-2.19.orig/src/text-utils/pg.c	2011-03-02 09:46:44.393609195 -0600
++++ util-linux-2.19/src/text-utils/pg.c	2011-03-02 09:47:56.385499730 -0600
+@@ -57,7 +57,7 @@
+ #include <ncurses/ncurses.h>
+ #endif
+ 
+-#include <term.h>
++#include <ncurses/term.h>
+ 
+ #include "nls.h"
+ #include "xalloc.h"
+Index: util-linux-2.19/src/text-utils/ul.c
+===================================================================
+--- util-linux-2.19.orig/src/text-utils/ul.c	2011-03-02 09:45:10.461604543 -0600
++++ util-linux-2.19/src/text-utils/ul.c	2011-03-02 09:45:18.681484291 -0600
+@@ -43,7 +43,7 @@
+ #include <stdio.h>
+ #include <unistd.h>		/* for getopt(), isatty() */
+ #include <string.h>		/* for memset(), strcpy() */
+-#include <term.h>		/* for setupterm() */
++#include <ncurses/term.h>		/* for setupterm() */
+ #include <stdlib.h>		/* for getenv() */
+ #include <limits.h>		/* for INT_MAX */
+ #include <signal.h>		/* for signal() */
