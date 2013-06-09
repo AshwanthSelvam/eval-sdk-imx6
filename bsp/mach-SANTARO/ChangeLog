@@ -1,0 +1,19 @@
+2013-06-02  Carsten Behling <behlin_c@gmx.de>
+
+	* bsp/mach-SANTARO/ChangeLog: Initial version.
+	* bsp/mach-SANTARO/mach-SANTARO/Config: Initial version.
+	* bsp/mach-SANTARO/ConfigToolchain: Initial version.
+	* bsp/mach-SANTARO/Make.conf: Initial version.
+	* bsp/mach-SANTARO/apps/ConfigExtra: Initial version.
+	* bsp/mach-SANTARO/apps/Makefile: Initial version.
+	* bsp/mach-SANTARO/apps/base/Config: Initial version.
+	* bsp/mach-SANTARO/apps/base/Makefile: Initial version.
+	* bsp/mach-SANTARO/bspconfig: Initial version.
+	* bsp/mach-SANTARO/bspconfig.default: Initial version.
+	* bsp/mach-SANTARO/patches/linux-3.0.35_rel_imx_1.1.0/santaro-hardware-support.patch: Initial version.
+	* bsp/mach-SANTARO/patches/linux-3.0.35_rel_imx_1.1.0/series: Initial version.
+	* bsp/mach-SANTARO/patches/uboot_iMX6_boundary-Rev2013.01-rc1/santaro-hardware-support.patch: Initial version.
+	* bsp/mach-SANTARO/patches/uboot_iMX6_boundary-Rev2013.01-rc1/series: Initial version.
+	* bsp/mach-SANTARO/u-boot/Config: Initial version.
+	* bsp/mach-SANTARO/u-boot/Makefile.rules: Initial version.
+
