@@ -110,6 +110,7 @@ kernel=""
 endif
 
 coreconfig: .oscheck header
+	$(V)$(MAKE) -C kernel $(KERNEL)
 	$(V)bsp/scripts/coreconfig $(board) $(toolchain) $(bootloader) $(kernel)
 
 doc: .oscheck header 
