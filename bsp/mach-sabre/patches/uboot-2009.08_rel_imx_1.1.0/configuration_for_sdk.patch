@@ -1,8 +1,8 @@
 Index: u-boot-2013.01/src/include/configs/nitrogen6x.h
 ===================================================================
---- u-boot-2013.01.orig/src/include/configs/nitrogen6x.h	2013-05-20 17:21:30.174493095 -0600
-+++ u-boot-2013.01/src/include/configs/nitrogen6x.h	2013-05-20 17:23:30.878493559 -0600
-@@ -164,27 +164,41 @@
+--- u-boot-2013.01.orig/src/include/configs/nitrogen6x.h	2013-03-08 10:51:51.000000000 -0600
++++ u-boot-2013.01/src/include/configs/nitrogen6x.h	2013-06-12 15:58:12.249811185 -0600
+@@ -164,27 +164,52 @@
  #define CONFIG_LOADADDR			       0x10800000
  #define CONFIG_SYS_TEXT_BASE	       0x17800000
  
@@ -27,15 +27,24 @@ Index: u-boot-2013.01/src/include/configs/nitrogen6x.h
 +			"done ; " \
 +		"done;\0 " \
 +	"loaduimage=for dtype in sata mmc ; do " \
++			"for disk in 0 1 ; do ${dtype} dev ${disk} ;" \
++				"for fs in fat ext2 ; do " \
++					"${fs}load " \
++						"${dtype} ${disk}:1 " \
++						"${loadaddr} " \
++						"/uImage;" \
++				"done ; " \
++			"done ; " \
++		"done;\0 " \
++	"detectdisplays=for dtype in sata mmc ; do " \
  			"for disk in 0 1 ; do ${dtype} dev ${disk} ;" \
  				"for fs in fat ext2 ; do " \
  					"${fs}load " \
  						"${dtype} ${disk}:1 " \
--						"10008000 " \
+ 						"10008000 " \
 -						"/6x_bootscript" \
 -						"&& source 10008000 ; " \
-+						"${loadaddr} " \
-+						"/uImage;" \
++						"/boot_script&&source 10008000;" \
  				"done ; " \
  			"done ; " \
 -		"done; " \
@@ -48,6 +57,7 @@ Index: u-boot-2013.01/src/include/configs/nitrogen6x.h
 +	"importbootenv=echo Importing environment...; env import -t ${loadaddr} ${filesize}\0" \
 +	"bootcmd=run loadbootenv ;" \
 +			"run importbootenv ; " \
++			"run detectdisplays ;" \
 +				"if test -n ${uenvcmd} ; then " \
 +					"run uenvcmd; " \
 +				"fi ;\0" \

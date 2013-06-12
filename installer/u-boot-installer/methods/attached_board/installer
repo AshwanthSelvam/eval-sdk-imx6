@@ -1271,7 +1271,7 @@ sub install_bootcmd() {
 
         if ( $EXECUTE_IMX_INSTALL eq 'y' ) {
             $BOOTCMD =
-"for dtype in sata mmc ; do for disk in 0 1 ; do \${dtype} dev \${disk} ; for fs in fat ext2 ; do \${fs}load \${dtype} \${disk}:1 10800000 /uImage;done ; done ; done;bootm 10800000";
+"for dtype in sata mmc ; do for disk in 0 1 ; do \${dtype} dev \${disk} ; for fs in fat ext2 ; do \${fs}load \${dtype} \${disk}:1 10008000 /boot_script&&source 10008000;\${fs}load \${dtype} \${disk}:1 10800000 /uImage;done ; done ; done;bootm 10800000";
         }
         else {
             $BOOTCMD =

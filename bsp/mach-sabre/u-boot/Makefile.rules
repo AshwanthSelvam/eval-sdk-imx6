@@ -13,6 +13,7 @@ UBOOT_BOARD_CONFIG = nitrogen6x_config
 .PHONY: mach_build mach_clean 
 
 mach_post_build: 
+	$(V) $(BOOTLOADERDIR)/src/tools/mkimage -T script -A arm -C none -n 'Boot Script' -d $(BOOTLOADERDIR)/src/board/boundary/nitrogen6x/boot_script.txt $(IMAGEDIR)/boot_script > /dev/null
 
 mach_build: 
 

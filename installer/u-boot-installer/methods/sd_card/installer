@@ -109,6 +109,7 @@ if (   ( $INSTALLATION_MODE eq "cmdline" )
     || ( $INSTALLATION_MODE eq "all" ) )
 {
     install_ubootEnv();
+    install_bootscript();
 }
 
 if ( ( $INSTALLATION_MODE eq "kernel" ) || ( $INSTALLATION_MODE eq "all" ) ) {
@@ -451,6 +452,15 @@ sub install_ubootEnv {
     print "    Flashing uEnv.txt to SD boot partition\n";
     print "    Copying the uEnv.txt into the SD...\n";
     cmd_echo("sudo cp $IMAGEDIR/uEnv.txt $IMAGEDIR/boot/uEnv.txt");
+}
+
+
+# ========================== #
+# install_ubootEnv           #
+# ========================== #
+sub install_bootscript {
+    print BOLD BLUE "  Copying boot_script into the SD...\n";
+    cmd_echo("sudo cp $IMAGEDIR/boot_script $IMAGEDIR/boot/boot_script");
 }
 
 1;
