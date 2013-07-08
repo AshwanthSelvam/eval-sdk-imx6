@@ -347,39 +347,28 @@ sub umount {
 # sd_install_bootloader      #
 # ========================== #
 sub sd_install_bootloader {
-    if ( $BOOTLOADER_OUT_OF_FS eq "y" ) {
-        print BOLD BLUE "  Flashing bootloader and UBL to SD...\n";
-        print
-"    Embedding the UBL and U-boot image into the SD after the MBR...\n";
-        cmd_echo(
-"sudo $UFLASH -d ${SD_DEVICE} -u ${IMAGEDIR}/${SDCARD_UBL} -b ${IMAGEDIR}/bootloader -e ${CONFIG_UBOOT_RAM_ADDRS} -l ${CONFIG_UBOOT_RAM_ADDRS}"
-        );
-    }
-    else {
+    if ($BOOTLOADER_OUT_OF_FS eq "y") {
+        print BOLD BLUE "  Flashing bootloader to SD...\n";
+        print "    Embedding the U-boot image into the SD after the MBR...\n";
+        cmd_echo("sudo dd if=$IMAGEDIR/bootloader of=$SD_DEVICE seek=2 bs=512 2> /dev/null");
+    } else {
         print BOLD BLUE "  Flashing bootloader to SD boot partition\n";
-        if ( $PREBOOTLOADER eq "XLoader" ) {
+        if ($PREBOOTLOADER eq "XLoader") {
             print "    Copying the X-Loader image into the SD...\n";
             cmd_echo("sudo cp $IMAGEDIR/x-load.bin.ift $IMAGEDIR/boot/MLO");
         }
-        if ( $PREBOOTLOADER eq "UBOOT_MIN" ) {
+        if (($PREBOOTLOADER eq "UBOOT_MIN") || ($PREBOOTLOADER eq "UBOOT_MLO")) {
             print "    Copying the $MIN_NAME image into the SD...\n";
             cmd_echo("sudo cp $IMAGEDIR/$MIN_NAME $IMAGEDIR/boot/MLO");
         }
         print "    Copying the U-boot image into the SD...\n";
-        cmd_echo("sudo cp $IMAGEDIR/bootloader $IMAGEDIR/boot/u-boot.bin");
-
-        #  if () {
-        print "    Copying the U-boot image into the SD boot offset...\n";
-        if ( !( $CONFIG_INSTALLER_SD_DEVICE_LOOPBACK eq "y" ) ) {
-          cmd_echo(
-"sudo dd if=$IMAGEDIR/bootloader of=$SD_DEVICE seek=2 bs=512 > /dev/null"
-          );
+        if ($PREBOOTLOADER eq "UBOOT_MLO") {
+          cmd_echo("sudo cp $IMAGEDIR/bootloader $IMAGEDIR/boot/u-boot.img");
         }
         else {
-#            cmd_echo(
-#"sudo dd if=$IMAGEDIR/bootloader of=$SDIMG seek=2 bs=512 > /dev/null"
-#            );
+          cmd_echo("sudo cp $IMAGEDIR/bootloader $IMAGEDIR/boot/u-boot.bin");
         }
+        cmd_echo("sudo dd if=$IMAGEDIR/bootloader of=$SD_DEVICE seek=2 bs=512 2> /dev/null");
 
         #}
     }
