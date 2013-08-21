@@ -1,0 +1,3 @@
+::sysinit:/etc/rcS
+::restart:/sbin/init
+ttymxc1::askfirst:-/bin/sh

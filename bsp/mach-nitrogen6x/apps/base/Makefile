@@ -34,6 +34,9 @@ endif
 include $(DEVDIR)/bsp/mach/Make.conf
 
 build:
+	# Install basic /etc files
+	$(V)cp -R etc $(FSROOT)/
+	$(V)find $(FSROOT)/etc/ -name .svn | xargs rm -Rf
 
 cmdline:
 	$(V)echo -n "console=ttymxc1,115200n8 ">>$(CMDLINEFILE)
