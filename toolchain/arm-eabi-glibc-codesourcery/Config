@@ -7,7 +7,7 @@ menu "Toolchain configurations"
 
 config TOOLCHAIN_PATH
 	string "Toolchain binaries path"
-	default "/opt/codesourcery/arm-2009q1-203"
+	default "/opt/codesourcery/arm-2009q1"
 	help
 	    Path on the file system of the toolchain binaries
 
