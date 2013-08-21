@@ -1,0 +1,34 @@
+#
+# Ridgerun BSP Configuration file for Nitrogen6X board
+#
+
+config BSP_NET_HAS_ETH0
+	bool
+	select BSP_NET_HAS_NET
+	default y
+
+
+
+# Required settings for iMX6 SabreLite installation mode
+
+config BSP_MACH_INSTALLER_MODE_HYBRID
+	bool
+	default y
+	help
+	    iMX6 SabreLite is capable of storing only the bootloader in NOR-Flash.
+	    the rest of the firmware must be stored in a SD Card
+
+
+config INSTALLER_UBOOT_PARTITION_SIZE
+	string "Size of U-Boot VFAT partition (in MB)"
+	default 39
+	help
+		The first partition on the SD card is a VFAT file system
+		containing the uboot environement variables and the kernel.
+		If other files need to be saved in the first partition, increase
+		the size.  Note: Windows only mounts the first VFAT partition,
+		so if you need to save files on the SD card that are readable by
+		a Windows machine, use this setting to make room for those
+		files.  If your root file system is initramfs, then the kernel
+		image file will also contain the entire root file system, so
+		the U-Boot VFAT partition will need to be larger.

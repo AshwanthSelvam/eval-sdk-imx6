@@ -1,0 +1,20 @@
+#$L$
+# Copyright (C) 2011 Ridgerun (http://www.ridgerun.com). 
+#
+#$L$
+
+ifeq ($(DEVDIR),)
+$(error ====== DEVDIR variable is empty, invoke this Makefile from the BSP root, or provide the path to it =====)
+endif
+include $(DEVDIR)/bsp/mach/Make.conf
+
+UBOOT_BOARD_CONFIG = nitrogen6x_config
+
+.PHONY: mach_build mach_clean 
+
+mach_post_build: 
+	$(V) $(BOOTLOADERDIR)/src/tools/mkimage -T script -A arm -C none -n 'Boot Script' -d $(BOOTLOADERDIR)/src/board/boundary/nitrogen6x/boot_script.txt $(IMAGEDIR)/boot_script > /dev/null
+
+mach_build: 
+
+mach_clean: 
