@@ -16,7 +16,6 @@ my $NAND_BLOCK_SIZE =
   $ENV{'NAND_BLOCK_SIZE'};    # in bytes, typically 16368 or 131072
 my $NAND_PAGE_SIZE = $ENV{'NAND_PAGE_SIZE'};   # in bytes, typically 512 or 2048
 my $ERASECHIP      = $ENV{'ERASECHIP'};
-my $HOST_IP        = $ENV{'HOST_IP'};
 my $COM_METHOD;
 my $TELNETIP;
 my $TELNETPORT;
@@ -32,7 +31,6 @@ my $FLASH_TYPE;
 my $PREBOOTLOADER;
 my $SPI_INIT;
 my $SD_DEVICE = $CONFIG_INSTALLER_SD_DEVICE;
-my $TFTPDIR   = $CONFIG_INSTALLER_TFTP_SERVER_DIRECTORY;
 my $DFUUTIL = "$DEVDIR/bootloader/$BOOTLOADER/src/tools/dfu-util/src/dfu-util";
 my $USBUTIL = "$DEVDIR/fs/host-apps/usb_loader";
 
@@ -90,8 +88,10 @@ elsif ( $CONFIG_INSTALLER_DFU_METHOD eq "y" ) {
     $INSTALL_METHOD = "DFU";
 
 }
-elsif ( $CONFIG_INSTALLER_TFTP_METHOD eq "y" ) {
-    $INSTALL_METHOD = "TFTP";
+elsif ( $CONFIG_INSTALLER_TFTP_METHOD eq "y"  || $TFTP_KERNEL eq 'y') {
+    if ( $CONFIG_INSTALLER_TFTP_METHOD eq "y" ) {
+		$INSTALL_METHOD = "TFTP";
+	}
     if ( $CONFIG_INSTALLER_DHCP eq "y" ) {
         $NET_METHOD = "dhcp";
     }
@@ -177,11 +177,12 @@ my $MTD_UBOOT_INTEGRATION = $CONFIG_INSTALLER_MTD_UBOOT_INTEGRATION;
 my $MTD_EXTRA_PARTITIONS  = $CONFIG_INSTALLER_MTD_EXTRA_PARTITIONS;
 
 my $GENERATE_EXTERNAL_INSTALLER = $CONFIG_INSTALLER_MODE_SD_CARD_INSTALLER;
-my $EXECUTE_IMX_INSTALL         = $CONFIG_BSP_ARCH_INSTALLER_SUPPORTS_USB_BOOT;
+my $EXECUTE_IMX_INSTALL         = $CONFIG_BSP_MACH_INSTALLER_SUPPORTS_USB_BOOT;
 my $EXTERNAL_INSTALLER_DIR      = "$IMAGEDIR/installer";
 my $EXTERNAL_INSTALLER_REPLACE_STRINGS = "";
 my $UBOOT_OFFSET                       = 0;
 my $FS_ARGS = "root=/dev/mmcblk0p2 rootdelay=2 rootfstype=ext3  mem=364M";
+my $IP_METHOD;
 
 # Set bootloader to be installed
 if ( $EXECUTE_IMX_INSTALL eq "y" ) {
@@ -286,7 +287,7 @@ if ($LOG_INSTALL_FILE) {
 }
 
 # Sanity checks
-if ( $INSTALL_METHOD eq "TFTP" ) {
+if ( $INSTALL_METHOD eq "TFTP" || $TFTP_KERNEL eq 'y') {
     if ( !-d $TFTPDIR ) {
         fatal_error(
 "Can't deploy firmware to $TFTPDIR, directory doesn't exists. This is required for tftp installation, so we have to abort"
@@ -343,7 +344,9 @@ if ( $GENERATE_EXTERNAL_INSTALLER eq "y" ) {
     return 1;
 }
 
+# iMX6 Installation
 if ( $EXECUTE_IMX_INSTALL eq "y" ) {
+	
 
     if ( $INSTALLATION_MODE ne "kernel" && $INSTALLATION_MODE ne "fs" ) {
 
@@ -443,6 +446,7 @@ sub usb_load {
 
     # USB boot
     cmd_silent("sudo $USBUTIL/imx_usb $BOOTLOADERIMAGE > /dev/null");
+    send_data("    \n");
 
     sleep(2);
 }
@@ -1270,8 +1274,16 @@ sub install_bootcmd() {
     elsif ( $FLASH_TYPE eq "SPI" ) {
 
         if ( $EXECUTE_IMX_INSTALL eq 'y' ) {
-            $BOOTCMD =
+			if ( $TFTP_KERNEL eq 'y' ) { # Boot via TFTP
+			# Set boards iup method
+			set_ip_method();
+				$BOOTCMD =
+"for dtype in sata mmc ; do for disk in 0 1 ; do \${dtype} dev \${disk} ; for fs in fat ext2 ; do \${fs}load \${dtype} \${disk}:1 10008000 /boot_script&&source 10008000 ; done ; done ; done;$IP_METHOD;setenv serverip $HOST_IP; setenv loadaddr 0x10800000;tftp $TFTP_KERNEL_IMAGE; bootm";
+			}
+			else {
+				$BOOTCMD =
 "for dtype in sata mmc ; do for disk in 0 1 ; do \${dtype} dev \${disk} ; for fs in fat ext2 ; do \${fs}load \${dtype} \${disk}:1 10008000 /boot_script&&source 10008000;\${fs}load \${dtype} \${disk}:1 10800000 /uImage;done ; done ; done;bootm 10800000";
+			}
         }
         else {
             $BOOTCMD =
@@ -1341,6 +1353,20 @@ sub generate_installer_script() {
 sub set_external_installer_value() {
     $EXTERNAL_INSTALLER_REPLACE_STRINGS =
       "$EXTERNAL_INSTALLER_REPLACE_STRINGS" . "-e 's?\@$_[0]\@?$_[1]?g' ";
+}
+
+# ================================ #
+# Set method for getting boards ip #
+# ================================ #
+sub set_ip_method() {
+	if ( $CONFIG_INSTALLER_DHCP eq "y"  ) { # DHCP
+		$IP_METHOD = 
+			"setenv autoload no;dhcp";
+	}
+	else { # Static
+		$IP_METHOD =
+			"setenv ipaddr ";
+	}
 }
 
 # ========================================== #

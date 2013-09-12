@@ -37,6 +37,16 @@ config INSTALLER_MODE_SD_CARD_INSTALLER
 
 endchoice
 
+# Load Kernel via TFTP Options
+
+config INSTALLER_MODE_TFTP_KERNEL
+	bool "Start kernel via tftp"
+	default n
+	help
+	    With this mode the kernel image is going to be loaded to ram 
+	    from a tftp server instead of an sdcard or on board momory every
+	    time the board starts
+	    	
 
 config INSTALLER_INSTALL_PRE_BOOTLOADER
 	bool "Install Pre-Bootloader in SPI-NOR"
@@ -78,7 +88,7 @@ config INSTALLER_LOAD_ADDRS
 config INSTALLER_HOST_NET_INTERFACE
     string "Interface on your host machine connected to your target hardware"
     default "eth0"
-    depends on INSTALLER_MODE_ATTACHED_BOARD || (INSTALLER_MODE_SD_CARD && FS_TARGET_NFSROOT) || INSTALLER_INSTALL_PRE_BOOTLOADER
+    depends on INSTALLER_MODE_ATTACHED_BOARD || (INSTALLER_MODE_SD_CARD && FS_TARGET_NFSROOT) || INSTALLER_INSTALL_PRE_BOOTLOADER || INSTALLER_MODE_TFTP_KERNEL
     help
      If you are going to deploy over tftp or use NFS root mount, you need to
      specify which network interface in your host machine faces the target
