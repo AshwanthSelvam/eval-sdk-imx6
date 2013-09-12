@@ -11,6 +11,11 @@ config BSP_NET_HAS_ETH0
 
 # Required settings for iMX6 SabreLite installation mode
 
+
+config BSP_MACH_INSTALLER_SUPPORTS_USB_BOOT
+	bool
+	default y
+
 config BSP_MACH_INSTALLER_MODE_HYBRID
 	bool
 	default y
