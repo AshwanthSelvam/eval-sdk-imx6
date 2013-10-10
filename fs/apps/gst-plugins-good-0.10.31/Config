@@ -4,7 +4,6 @@ config FS_APPS_GSTREAMER_PLUGINS_GOOD_0_10_31
         select FS_APPS_GLIB
         select FS_APPS_LIBOIL
         select FS_APPS_LIBXML2
-        select FS_APPS_LIBICONV
         select FS_APPS_GETTEXT
 	help
 	This option enabled the core good plugins for gstreamer that

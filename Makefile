@@ -1,8 +1,8 @@
 #$L$
-# Copyright (C) 2011 Ridgerun (http://www.ridgerun.com). 
+# Copyright (C) 2011-2013 Ridgerun (http://www.ridgerun.com). 
 #$L$
 
-export DEVDIR=${shell pwd}
+export DEVDIR=$(PWD)
 COMPONENTS = toolchain kernel fs bootloader installer
 
 include bsp/mach/Make.conf
@@ -11,11 +11,14 @@ include bsp/classes/flags.defs
 # Used to the graphical output indexation
 TABINDEX ?= \040
 
-.PHONY: build config bspconfig bspconfig_batch preconfig chkconfig buildfs \
+.PHONY: build config bspconfig bspconfig_batch preconfig buildfs \
 clean prebuild header kernel bootloader fs update coreconfig \
 help help_targets help_parameters help_examples install
 
-build:: .oscheck header prebuild $(foreach COMP, $(COMPONENTS), $(COMP)_build)
+build:: .oscheck header prebuild $(foreach COMP, $(COMPONENTS), $(COMP)_build) copyrights
+
+force_build_execute:
+	$(V)$(MAKE) build
 
 # Toolchain variable environment is required by bsp/oscheck/pkg
 export TOOLCHAIN
@@ -48,11 +51,19 @@ endif
 
 prebuild::
 
-patch:: $(foreach COMP, $(COMPONENTS), $(COMP)_patch)
+patch:: .oscheck header $(foreach COMP, $(COMPONENTS), $(COMP)_patch)
 
-buildfs:: $(foreach COMP, $(COMPONENTS), $(COMP)_buildfs)
+buildfs:: .oscheck header $(foreach COMP, $(COMPONENTS), $(COMP)_buildfs)
 
-unpatch:: $(foreach COMP, $(COMPONENTS), $(COMP)_unpatch)
+#Special seek for ti-flash-utils and patch remove
+TI_FLASH_UTILS=$(shell find bootloader -name 'ti-flash-utils')
+unpatch_noheader: $(foreach COMP, $(COMPONENTS), $(COMP)_unpatch)
+	if [ -d "$(TI_FLASH_UTILS)" ] ; then \
+		cd $(TI_FLASH_UTILS) ; \
+		make unpatch ; \
+	fi;
+
+unpatch:: .oscheck header unpatch_noheader
 
 clean:: .oscheck header $(foreach COMP, $(COMPONENTS), $(COMP)_clean)
 	@$(MAKE) -C bsp clean $(MAKE_CALL_PARAMS)
@@ -149,7 +160,8 @@ help_targets::
 	@echo ""
 	@echo "Make targets:"
 	@echo ""
-	@echo "   build           - build kernel, target fs, bootloader"
+	@echo "   build           - build kernel, target filesystem, bootloader"
+	@echo "   force_build     - same as build, but forces the recompilation of the target filesystem"
 	@echo "   kernel          - build kernel"
 	@echo "   fs              - build target filesystem"
 	@echo "   cmdline         - build cmdline for target kernel (fs target does the same as well)"
@@ -159,17 +171,21 @@ help_targets::
 	@echo "   config          - allow SDK to be configured"
 	@echo "   config_batch    - attempt to configure without user interaction"
 	@echo "   clean           - delete all derived files"
-	@echo "   update          - Checks for repository updates for the SDK"
-	@echo "   show_updates    - Checks for available updates for the SDK's release;"
+	@echo "   remove_fs       - delete the filesystem"
+	@echo "   remove_fsdev    - delete the filesystem staging directory"
+	@echo "   update          - checks for repository updates for the SDK"
+	@echo "   show_updates    - checks for available updates for the SDK's release;"
 	@echo "                     use revision=<number> to specify a particular revision or"
 	@echo "                     range (same syntax as svn log) or showdirs=1 to enable showing"
 	@echo "                     change details in the log displayed."
-	@echo "   env             - Displays commands to run to setup shell environment"
-	@echo "   coreconfig      - Select toolchain, bootloader, and kernel (updates bsp/mach/Make.conf)"
-	@echo "   doc             - Generate the SDK API documentation into the documentation folder"
+	@echo "   env             - displays commands to run to setup shell environment"
+	@echo "   coreconfig      - select toolchain, bootloader, and kernel (updates bsp/mach/Make.conf)"
+	@echo "   doc             - generate the SDK API documentation into the documentation folder"
 	@echo "   prelink         - prelink the root filesystem"
 	@echo "   rrsdk_patches_refresh - Update merged series file contains arch, mach, and top level"
 	@echo "                     patches.  Only for bootloader, kernel and dvsdk/ezsdk directories."
+	@echo "   copyrights      - generate the copyright documentation for every package in the SDK"
+	@echo "   copyrights_check - check if the link of each package is valid"
 
 help_parameters::
 	@echo ""
@@ -220,7 +236,7 @@ endif
 # Component Function template call
 define COMP_template
 .PHONY: $(1)$(2)
-$(1)$(2): header
+$(1)$(2):
 	$(V)if [ -d $(1) ] ; then \
 	  $(ECHO) "Processing $(1)..."; \
 	  $(EXECUTE) $(MAKE) -C $(1) $(3) $(MAKE_CALL_PARAMS); \
@@ -232,7 +248,6 @@ $(foreach COMP, $(COMPONENTS), $(eval $(call COMP_template,$(COMP),_patch,patch)
 $(foreach COMP, $(COMPONENTS), $(eval $(call COMP_template,$(COMP),_build)))
 $(foreach COMP, $(COMPONENTS), $(eval $(call COMP_template,$(COMP),_buildfs,buildfs)))
 $(foreach COMP, $(COMPONENTS), $(eval $(call COMP_template,$(COMP),_preconfig,preconfig)))
-$(foreach COMP, $(COMPONENTS), $(eval $(call COMP_template,$(COMP),_chkconfig,chkconfig)))
 $(foreach COMP, $(COMPONENTS), $(eval $(call COMP_template,$(COMP),_unpatch,unpatch)))
 $(foreach COMP, $(COMPONENTS), $(eval $(call COMP_template,$(COMP),_clean,clean)))
 
@@ -240,12 +255,16 @@ $(foreach COMP, $(COMPONENTS), $(eval $(call COMP_template,$(COMP),_clean,clean)
 remove_fs:
 	$(V)rm -rf $(DEVDIR)/fs/fs
 
-# Rule to clean fs/apps build
-remove_fs_apps:
-	$(V)rm -rf $(DEVDIR)/bsp/local/*
-	$(V)find $(DEVDIR)/fs/host-apps/ -name configured | xargs rm -f {} ;
-	$(V)find $(DEVDIR)/fs/host-apps/ -name installed | xargs rm -f {} ;
-	$(V)find $(DEVDIR)/fs/host-apps/ -name $(BUILT_FLAG) | xargs rm -f {} ;
-	$(V)find $(DEVDIR)/fs/host-apps/ -name $(FETCHED_FLAG) | xargs rm -f {} ;
-	$(V)find $(DEVDIR)/fs/host-apps/ -name $(INSTALLED_FLAG) | xargs rm -f {} ;
-	$(V)find $(DEVDIR)/fs/host-apps/ -name $(PATCHED_FLAG) | xargs rm -f {} ;
+# Rule to remove fs/fsdev
+remove_fsdev: remove_built_flag
+	$(V)rm -rf $(DEVDIR)/fs/fsdev
+
+copyrights::
+	$(V) $(ECHO) "Generating copyrights..."
+	$(V) cd bsp/scripts/copyright && ./copyright_handling.sh
+
+copyrights_check::
+	$(V) $(ECHO) "Checking copyrights links..."
+	$(V) cd bsp/scripts/copyright && ./copyrights_check.sh $(QOUT)
+
+include $(CLASSES)/force_build.defs

@@ -8,11 +8,11 @@ PKG_SHA1SUM=b45fc01b133fc23617fa501dd9307a90f467b396
 
 include ../../../bsp/classes/rrsdk.class
 
-APPS_LDFLAGS+=-Wl,--rpath-link -Wl,$(FSDEVROOT)/usr/lib 
+APPS_LDFLAGS+=-Wl,--rpath-link -Wl,$(FSDEVROOT)/usr/lib -Wl,--no-undefined
 
-AUTOTOOLS_PARAMS=--enable-soup=yes --disable-annodex --disable-gdk_pixbuf --disable-libpng --disable-shout2 \
+AUTOTOOLS_PARAMS=--enable-soup=yes --disable-annodex --disable-gdk_pixbuf --disable-libpng --disable-shout2  --disable-x --disable-xvideo \
 --without-x --disable-rpath --disable-valgrind --disable-nls --disable-schemas-install --disable-examples \
---disable-gconf --disable-aalib --disable-esd --disable-audiofx LDFLAGS="$(APPS_LDFLAGS)" CFLAGS="$(APPS_CFLAGS)"
+--disable-gconf --disable-aalib --disable-esd LDFLAGS="$(APPS_LDFLAGS)" CFLAGS="$(APPS_CFLAGS)"
 
 APPS_CFLAGS+=-I$(DEVDIR)/kernel/$(KERNEL)/include/
 
