@@ -36,9 +36,9 @@
 export BUILDING_FROM_RR_SDK=yes
 
 # Variables that control SGXSDK interaction
-ifeq ($(SGXSDK_NAME),)
-$(error ====== SGXSDK_NAME variable isn't defined on RidgeRun's sgxsdk makefile =====)
-endif
+#ifeq ($(SGXSDK_NAME),)
+#$(error ====== SGXSDK_NAME variable isn't defined on RidgeRun's sgxsdk makefile =====)
+#endif
 SGXSDKURL?=http://software-dl.ti.com/dsps/dsps_public_sw/sdo_sb/targetcontent/gfxsdk/
 RULES_MAKE?=sgxsdk/Rules.make
 -include $(RULES_MAKE)

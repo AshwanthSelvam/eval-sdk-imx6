@@ -3,13 +3,13 @@ SGXSDK_COPY_EXCLUSIONS_PATTERNS?=
 
 include $(CLASSES)/sgxsdk.defs
 
-ifeq ($(SGXSDK_PLATFORM),)
- $(error ====== SGXSDK_PLATFORM variable isn't defined on RidgeRun's ezsdk makefile =====)
-endif
+#ifeq ($(SGXSDK_PLATFORM),)
+# $(error ====== SGXSDK_PLATFORM variable isn't defined on RidgeRun's ezsdk makefile =====)
+#endif
 #============================================================================================
 # Adding targets according to the configured platform
 #============================================================================================
-ifeq ($(SGXSDK_PLATFORM),dm8168)
+ifeq ($(SGXSDK_PLATFORM),dm81xx)
 SGXSDK_TARGETS?=drivers_sgx demos_sgx
 OMAPES=6.x
 BUILD=release

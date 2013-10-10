@@ -1,0 +1,6 @@
+config FS_APPS_LIB_FSL_PARSER_3_0_8
+	bool "libfslparser 3.0.8"
+        select FS_APPS_GSTREAMER
+	help
+	    This option enables the parser library for freescale gstreamer
+	    plugins kernel version 3.0.35-4.0.0

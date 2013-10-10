@@ -3,10 +3,10 @@ EZSDK_COPY_EXCLUSIONS_PATTERNS=bin docs etc filesystem linux-devkit/environment-
 linux-devkit/include linux-devkit/md5sums linux-devkit/share linux-devkit/ti-install.log \
 linux-devkit/version linux-devkit/bin linux-devkit/etc linux-devkit/lib linux-devkit/mkspecs \
 linux-devkit/site-config linux-devkit/usr usr etc board-support/board-utilities board-support/docs \
-board-support/host-tools board-support/linux-2.6.37-psp04.00.00.12 board-support/u-boot-2010.06-psp04.00.00.12 \
+board-support/host-tools board-support/linux-2.6.37-psp04.04.00.01 board-support/u-boot-2010.06-psp04.04.00.01 \
 setup.sh example-applications/am-benchmarks-1.1 \
-example-applications/dsp-benchmark_1_00_00_05 example-applications/matrix-gui-e-1.3 example-applications/signal-analyzer_1_00_00_12 \
-example-applications/am-sysinfo-1.0 example-applications/linux-driver-examples-psp04.00.00.12
+example-applications/matrix-gui-e-1.3 example-applications/am-sysinfo-1.0 \
+example-applications/linux-driver-examples-psp04.04.00.01
 
 include $(CLASSES)/common.defs
 include $(CLASSES)/ezsdk.defs
@@ -24,7 +24,12 @@ EZSDK_TARGETS=cmem_v5
 endif
 
 ifeq ($(EZSDK_PLATFORM),dm8148)
-EZSDK_TARGETS+=osal_v5 syslink_v5 sgx-driver_v5 omx_v5 edma3lld_v5 omtb_v5 media_controller_utils_v5
+# Linux components
+EZSDK_TARGETS+=osal_v5 syslink_linux_v5 omx_v5 media_controller_utils_v5 rpe_linux_v5
+# DSP components
+EZSDK_TARGETS+=syslink_dsp_v5 edma3lld_v5 rpe_dsp_v5
+# Apps
+EZSDK_TARGETS+=omtb_v5 rpe_app_v5
 endif
 
 ifeq ($(EZSDK_PLATFORM),dm8168)

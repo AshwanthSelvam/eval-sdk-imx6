@@ -1,4 +1,0 @@
-rrsdk_integration.patch
-mach/configuration_for_sdk.patch
-mach/sabrelite_boot_script.patch
-mach/skip_env_on_sd_boot.patch

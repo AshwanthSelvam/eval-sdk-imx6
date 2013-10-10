@@ -15,10 +15,12 @@ our $KERNELIMAGE        = "$DEVDIR/images/kernel.uImage";
 our $TFTP_KERNEL_IMAGE  = "uImage${TFTPIMGSUFFIX}"; 
 our $TFTP_KERNEL 		= $CONFIG_INSTALLER_MODE_TFTP_KERNEL;
 our $TFTPDIR   			= $CONFIG_INSTALLER_TFTP_SERVER_DIRECTORY;
+our $DISPLAY_AUTODETECT =  $CONFIG_INSTALLER_AUTO_DISPLAY_DETECTION;
 our $HOST_IP        	= $ENV{'HOST_IP'};
 our $FSIMAGE            = "$DEVDIR/images/fsimage.uImage";
 our $ENABLE_DEBUG       = $ENV{'VERBOSE'} || 0;
 our $TARGET_FS_TYPE     = "noinstall";
+our $SDCAR_REQUIRED		= "n";
 
 # Configure FS type
 if ( $CONFIG_FS_TARGET_NFSROOT eq "y" ) {
@@ -59,12 +61,13 @@ elsif ( $CONFIG_INSTALLER_MODE_SD_CARD_INSTALLER eq "y" ) {
 }
 elsif ( $CONFIG_BSP_MACH_INSTALLER_MODE_HYBRID eq 'y' ) {
     if (   $CONFIG_INSTALLER_MODE_ATTACHED_BOARD eq "y"
+		|| $TFTP_KERNEL eq 'y'
         || defined $CONFIG_INSTALLER_BOOT_FROM_SD3
         || defined $CONFIG_INSTALLER_BOOT_FROM_SD4 )
     {
         require "methods/attached_board/installer";
     }
-    require "methods/sd_card/installer";
+	require "methods/sd_card/installer";
 }
 else {
     print RED "Error: ";

@@ -16,30 +16,33 @@ endif
 DVSDK_TARGETS=cmem_v4
 
 ifeq ($(DVSDK_PLATFORM),dm3730)
-DVSDK_TARGETS+=sdma_v4 dsplink_v4 lpm_v4 c6accel_v4 codecs_v4 dmai_v4 dvtb_v4
+DVSDK_TARGETS+=sdma_v4 dsplink_v4 lpm_v4 c6accel_v4 codecs_v4 dvtb_v4
 endif
 
 ifeq ($(DVSDK_PLATFORM),omap35x)
-DVSDK_TARGETS+=sdma_v4 dsplink_v4 lpm_v4 c6accel_v4 codecs_v4 dmai_v4
+DVSDK_TARGETS+=sdma_v4 dsplink_v4 lpm_v4 c6accel_v4 codecs_v4
 endif
 
 ifeq ($(DVSDK_PLATFORM),dm6446)
-DVSDK_TARGETS+=dsplink_v4 $(EXTERNAL_CODECS) dmai_v4
+DVSDK_TARGETS+=dsplink_v4 $(EXTERNAL_CODECS)
 endif
 
 ifeq ($(DVSDK_PLATFORM),omapl138)
-DVSDK_TARGETS+=dsplink_v4 c6accel_v4 codecs_v4 dmai_v4
+DVSDK_TARGETS+=dsplink_v4 c6accel_v4 codecs_v4
 endif
 
 ifeq ($(DVSDK_PLATFORM),dm365)
-DVSDK_TARGETS+=dm365mm_v4 irq_v4 edma_v4 dmai_v4
+DVSDK_TARGETS+=dm365mm_v4 irq_v4 edma_v4
 CMEM_TCMSETTINGS=allowOverlap=1 phys_start_1=0x00001000 phys_end_1=0x00008000 pools_1=1x28672
 endif
 
 ifeq ($(DVSDK_PLATFORM),dm368)
-DVSDK_TARGETS+=dm365mm_v4 irq_v4 edma_v4 dmai_v4
+DVSDK_TARGETS+=dm365mm_v4 irq_v4 edma_v4
 CMEM_TCMSETTINGS=allowOverlap=1 phys_start_1=0x00001000 phys_end_1=0x00008000 pools_1=1x28672
 endif
+
+# all DVSDKs need DMAI built
+DVSDK_TARGETS+=ce_check_for_rebuild dmai_v4
 
 export BUILDING_SOFTWARE_OUTSIDE_DEVDIR=y
 

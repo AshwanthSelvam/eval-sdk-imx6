@@ -50,3 +50,8 @@ preconfig:
 		echo -e "source fs/arch/$$i/Config \n\n" >>ConfigExtra ; \
 	    fi ; \
 	done
+
+patch: dependency_patch
+
+unpatch: dependency_unpatch
+

@@ -338,8 +338,8 @@ lpm_build:
 	$(V) touch $@
 
 lpm_clean:
-	if [ -e $(LINUXKERNEL_INSTALL_DIR) ] ; then \
-		$(V)$(MAKE) -C $(LPM_INSTALL_DIR)/packages/ti/bios/power/modules/omap3530/lpm \
+	$(V)if [ -e $(LINUXKERNEL_INSTALL_DIR) ] ; then \
+		$(MAKE) -C $(LPM_INSTALL_DIR)/packages/ti/bios/power/modules/omap3530/lpm \
 		LINUXKERNEL_INSTALL_DIR=$(LINUXKERNEL_INSTALL_DIR) MVTOOL_PREFIX=$(CSTOOL_PREFIX) DSPLINK_REPO=$(LINK_INSTALL_DIR) clean ; \
 	fi
 	$(V)rm -f lpm_build;
@@ -371,7 +371,7 @@ dsplink_build: dsplink_cfg dsplink_arm dsplink_dsp dsplink_dsp_genpackage dsplin
 	$(V) touch $@
 
 dsplink_cfg:
-	$(V) $(MAKE) -C $(FETCHER_EXTRACT_DIRECTORY_NAME) $@ $(QOUT)
+	$(V) $(MAKE) -C $(FETCHER_EXTRACT_DIRECTORY_NAME) $@ $(QOUT) $(ERRQOUT)
 	$(V) touch $@
 
 dsplink_arm: dsplink_cfg
@@ -384,7 +384,7 @@ dsplink_arm: dsplink_cfg
 	LD=$(CSTOOL_PREFIX)ld \
 	KERNEL_DIR=$(LINUXKERNEL_INSTALL_DIR) \
 	BASE_BUILDOS=$(LINUXKERNEL_INSTALL_DIR) \
-	all $(QOUT)
+	all $(QOUT) $(ERRQOUT)
 	$(V) touch $@
 
 dsplink_arm_clean:
@@ -493,7 +493,7 @@ c6accel_v4_clean: c6accel_clean
 .PHONY: c6accel_install
 
 c6accel_build:
-	$(V) $(MAKE) -C $(FETCHER_EXTRACT_DIRECTORY_NAME) c6accel $(QOUT)
+	$(V) $(MAKE) -C $(FETCHER_EXTRACT_DIRECTORY_NAME) c6accel $(QOUT) $(ERRQOUT)
 	$(V) touch $@
 
 c6accel_clean:
@@ -522,7 +522,7 @@ dmai_v4_clean: dmai_clean
 .PHONY: dmai_install
 
 dmai_build:
-	$(V) $(MAKE) -C $(FETCHER_EXTRACT_DIRECTORY_NAME) dmai $(QOUT)
+	$(V) $(MAKE) -C $(FETCHER_EXTRACT_DIRECTORY_NAME) dmai $(QOUT) $(ERRQOUT)
 	$(V) touch $@
 
 dmai_clean:
@@ -535,6 +535,36 @@ dmai_install:
 dmai_uninstall:
 	$(V)rm -rf $(FSROOT)/usr/share/ti/ti-dmai-apps
 
+#============================================================================================
+# Build the Codec Engine package for the configured platform
+#============================================================================================
+
+codec_engine: ce_build
+codec_engine_install: ce_install
+codec_engine_uninstall: ce_uninstall
+codec_engine_clean: ce_clean
+
+.PHONY: ce_install
+
+# rebuild codec engine if the needed Makefile is present
+
+ce_check_for_rebuild: $(if $(wildcard dvsdk/codec-engine*/Makefile),ce_build,)
+ce_check_for_rebuild_clean: $(if $(wildcard dvsdk/codec-engine*/Makefile),ce_clean,)
+ce_check_for_rebuild_install:
+ce_check_for_rebuild_uninstall:
+
+ce_build:
+	# first do a clean since dvsdk comes with codec engine pre-built
+	$(V) $(MAKE) -C $(FETCHER_EXTRACT_DIRECTORY_NAME) ce_clean $@ $(QOUT) $(ERRQOUT)
+	$(V) touch $@
+
+ce_clean:
+	$(V) $(MAKE) -C $(FETCHER_EXTRACT_DIRECTORY_NAME) $@ $(QOUT) $(ERRQOUT)
+	$(V) rm -f ce_build
+
+ce_install:
+
+ce_uninstall:
 
 #============================================================================================
 # Targets to build, install and clean codecs for the configured platform

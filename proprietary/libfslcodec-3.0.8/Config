@@ -1,0 +1,6 @@
+config FS_APPS_LIB_FSL_CODEC_3_0_8
+	bool "libfslcodec 3.0.8"
+        select FS_APPS_GSTREAMER
+	help
+	    This option enables the freescale gstreamer codec library fo kernel 
+	    version 3.0.35-4.0.0

@@ -36,7 +36,7 @@ PYTHON_PKG_FILES_DIR?=$(FETCHER_EXTRACT_DIRECTORY_NAME)
 python_install:
 ifneq ($(PYTHON_PKG_FILES),)
 	
-	#Collecting all the files specified in PYTHON_PKG_FILES and extracting them in PYTHON_SITE_PACKAGES. 
+	@#Collecting all the files specified in PYTHON_PKG_FILES and extracting them in PYTHON_SITE_PACKAGES. 
 	$(V) cd $(PYTHON_PKG_FILES_DIR) ; \
 	tar cf - $(PYTHON_PKG_FILES) | (cd $(PYTHON_SITE_PACKAGES) && tar xBf -) ; 
 	

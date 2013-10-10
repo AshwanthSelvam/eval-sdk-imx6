@@ -63,10 +63,6 @@
 #! <li>
 #! <b>RRSDK_POSTUNPATCH_TARGETS:</b> rule to allow undoing anything done by the RRSDK_PREPATCH_TARGETS
 #!
-#!
-#! <li>
-#! <b>CCACHE_ENABLE:</b> rule to avoid ccache during build process.  Use CCACHE_ENABLE=no in order to build the package without using ccache.  Default is "yes", with CONFIG_TOOLCHAIN_CCACHE SDK configuration setting controlling the global use of ccache.  If CONFIG_TOOLCHAIN_CCACHE is not defined, then ccache will not be used even if CCACHE_ENABLE=yes.
-#!
 
 
 .PHONY: rrsdk_install rrsdk_uninstall src patch unpatch patch_refresh
@@ -114,10 +110,21 @@ define rrsdk_install_dir
 	    tar -C $(2) -xpf -
 endef
 
-CORRECT_LA_SED_EXPRESSION?=s?libdir='/usr?libdir='$(FSDEVROOT)/usr?g;\
+ifneq ($(MAKECMDGOALS),sim)
+  CORRECT_LA_SED_EXPRESSION?=s?libdir='/usr?libdir='$(FSDEVROOT)/usr?g;\
         s?\ /usr/lib?\ $(FSDEVROOT)/usr/lib?g
-CORRECT_PKGCONFIG_SED_EXPRESSION?=s?prefix=/usr?prefix=$(FSDEVROOT)/usr?g
-CORRECT_DBUS_SERVICE_SED_EXPRESSION?=s?$(FSDEVROOT)/usr?/usr?g
+  CORRECT_PKGCONFIG_SED_EXPRESSION?=s?prefix=/usr?prefix=$(FSDEVROOT)/usr?g;\
+        s?includedir=/usr/include?includedir=$(FSDEVROOT)/usr/include?g; \
+        s?libdir=/usr/lib?libdir=$(FSDEVROOT)/usr/lib?g;
+  CORRECT_DBUS_SERVICE_SED_EXPRESSION?=s?$(FSDEVROOT)/usr?/usr?g
+else
+  CORRECT_LA_SED_EXPRESSION?=s?libdir='/usr?libdir='$(SIMROOT)/usr?g;\
+        s?\ /usr/lib?\ $(SIMROOT)/usr/lib?g
+  CORRECT_PKGCONFIG_SED_EXPRESSION?=s?prefix=/usr?prefix=$(SIMROOT)/usr?g;\
+        s?includedir=/usr/include?includedir=$(SIMROOT)/usr/include?g; \
+        s?libdir=/usr/lib?libdir=$(SIMROOT)/usr/lib?g;
+  CORRECT_DBUS_SERVICE_SED_EXPRESSION?=s?$(SIMROOT)/usr?/usr?g
+endif
 
 rrsdk_install:
 ifneq ($(MAKECMDGOALS),sim)
@@ -192,6 +199,18 @@ ifneq ($(MAKECMDGOALS),sim)
 	$(V) for dbus_file in $(CORRECT_DBUS_SERVICE) ; do \
 	    sed -i -e "$(CORRECT_DBUS_SERVICE_SED_EXPRESSION)" $(FSDEVROOT)/$$dbus_file ; \
 	done
+else
+	$(V) for la_file in $(CORRECT_LA) ; do \
+	    sed -i -e "$(CORRECT_LA_SED_EXPRESSION)" $(SIMROOT)/$$la_file ; \
+	done
+
+	$(V) for pc_file in $(CORRECT_PKGCONFIG) ; do \
+	    sed -i -e "$(CORRECT_PKGCONFIG_SED_EXPRESSION)" $(SIMROOT)/$$pc_file ; \
+	done
+
+	$(V) for dbus_file in $(CORRECT_DBUS_SERVICE) ; do \
+	    sed -i -e "$(CORRECT_DBUS_SERVICE_SED_EXPRESSION)" $(SIMROOT)/$$dbus_file ; \
+	done
 endif
 ifneq ($(DO_NOT_RUN_LDCONFIG_ON_INSTALL),yes)
 	$(V) mkdir -p $(FSROOT)/etc/
@@ -256,7 +275,7 @@ $(PATCHED_FLAG): $(RRSDK_PREPATCH_TARGETS)
 
 patch: src $(PATCHED_FLAG)
 
-unpatch:
+unpatch: $(RRSDK_POSTUNPATCH_TARGETS)
 	$(V) $(DEVDIR)/bsp/scripts/check_patches_consistency.sh
 	$(V) if [ -f .pc/applied-patches ] ; then \
 	    $(ECHO) ;\
@@ -266,7 +285,7 @@ unpatch:
 	    $(ECHO) ; \
 	    rm -Rf .pc ;\
 	fi
-	$(V) rm -f $(PATCHED_FLAG) series
+	$(V) rm -f $(PATCHED_FLAG) series $(BUILT_FLAG) $(INSTALLED_FLAG) gstplugin_install
 
 patch_refresh:
 	$(V) $(DEVDIR)/bsp/scripts/merge_patches.sh

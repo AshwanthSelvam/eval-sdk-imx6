@@ -1,0 +1,6 @@
+config FS_APPS_LIB_FSL_VPU_WRAP_1_0_35
+	bool "libfslvpuwrap 1.0.35"
+	select FS_APPS_GSTREAMER
+	help
+	    This option enables the VPU wrapper for freescale gstreamer 
+	    plugins kernel version 3.0.35-4.0.0

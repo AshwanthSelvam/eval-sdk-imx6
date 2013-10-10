@@ -76,12 +76,12 @@ config BSP_ARCH_KERNEL_ZBSSADDR
 	This work area is going to be used just for the decompression steps,
 	then it will be free.
 
-# This arch supports SD card boot mode
-config BSP_ARCH_SUPPORTS_SD_CARD_INSTALLER_MODE
+config BSP_ARCH_SD_CARD_INSTALLER_BOOTLOADER_OUT_OF_FS
 	bool
 	default y
 
-config BSP_ARCH_INSTALLER_SUPPORTS_USB_BOOT
+# This arch supports SD card boot mode
+config BSP_ARCH_SUPPORTS_SD_CARD_INSTALLER_MODE
 	bool
 	default y
 
@@ -117,10 +117,6 @@ config BSP_ARCH_SPI
 	  to set up your hardware properly to use this method
 
 endchoice
-
-config BSP_ARCH_INSTALLER_IPL_GENERATION_TARGET
-	string
-	default "gen_ipl"
 
 config BSP_ARCH_INSTALLER_UBOOT_FLASH_GENERATION_TARGET
 	string

@@ -16,11 +16,12 @@ build: rrfetched rrpatched built
 src: rrfetched
 
 built: 
-	$(MAKE) -C src CC="$(CC)" CFLAGS="$(APPS_CFLAGS)" LDFLAGS="$(APPS_LDFLAGS)" \
-	 INCLUDE_DIR="$(KERNEL_INCLUDE)" $(QOUT)
+	$(V) $(MAKE) -C src CC="$(CC)" CFLAGS="$(APPS_CFLAGS)" LDFLAGS="$(APPS_LDFLAGS)" \
+	 INCLUDE_DIR="$(KERNEL_INCLUDE)" $(QOUT) $(ERRQOUT)
 
 installed:
-	$(MAKE) -C src INCLUDE_DIR="$(KERNELDIR)/include" DESTDIR=$(FSDEVROOT) install $(QOUT)
+	$(V) $(MAKE) -C src INCLUDE_DIR="$(KERNELDIR)/include" DESTDIR=$(FSDEVROOT) \
+	 install $(QOUT) $(ERRQOUT)
 
 install: installed rrsdk_install
 
@@ -33,7 +34,7 @@ clean:
 	fi ; 
 	$(V) rm -Rf installed built configured
 
-distclean: clean unpatch fetcher_clean
+distclean: clean unpatch rrfetched_clean
 
 include ../../../bsp/classes/rrsdk.class
 include $(CLASSES)/fetcher.defs

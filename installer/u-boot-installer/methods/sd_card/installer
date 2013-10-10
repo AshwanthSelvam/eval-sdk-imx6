@@ -49,13 +49,27 @@ else {
 # ==============================================================================
 my $INSTALLATION_MODE = @ARGV[0];
 
+# Checking if SD Card is required
+my $NEED_SDCARD = 'n';
+
+if (  $CONFIG_INSTALLER_MODE_SD_CARD eq 'y' 
+	|| ( $TARGET_FS_TYPE eq "sd" && ($INSTALLATION_MODE eq 'fs' || $INSTALLATION_MODE eq 'all' ))
+	|| ( ($INSTALLATION_MODE eq "kernel" || $INSTALLATION_MODE eq 'all' ) && $TFTP_KERNEL ne 'y' )
+	|| $CONFIG_INSTALLER_AUTO_DISPLAY_DETECTION eq 'y' ){
+		$NEED_SDCARD = 'y';
+	}
+	
+if ( $NEED_SDCARD ne 'y' ) { #  We don't need an SD card
+	return 1;
+}
+
 if (
     $CONFIG_BSP_MACH_INSTALLER_MODE_HYBRID ne 'y'
     || (   $CONFIG_INSTALLER_MODE_SD_CARD eq 'y'
         && $CONFIG_BSP_MACH_INSTALLER_MODE_HYBRID eq 'y' )
     || $INSTALLATION_MODE eq "all"
   )
-{
+{	
 
     if ( $CONFIG_INSTALLER_SD_DEVICE_LOOPBACK eq "y" ) {
         $SD_DEVICE = $SDIMG;
@@ -386,12 +400,7 @@ sub install_installer {
 # install_kernel             #
 # ========================== #
 sub install_kernel {
-	if ( $TFTP_KERNEL eq 'y' ) {	# Boot via tftp
-		print BOLD BLUE "  Flashing Kernel image...\n";
-		print "    Copying the kernel into the tftp server path...\n";
-		cmd_echo("sudo cp $IMAGEDIR/kernel.uImage $TFTPDIR/$TFTP_KERNEL_IMAGE");
-	}
-	else {
+	if  ( $TFTP_KERNEL ne 'y' ) {	# 
 		print BOLD BLUE "  Flashing Kernel image to SD...\n";
 		print "    Copying the kernel into the SD...\n";
 		cmd_echo("sudo cp $IMAGEDIR/kernel.uImage $IMAGEDIR/boot/uImage");
@@ -477,8 +486,10 @@ sub install_ubootEnv {
 # install_ubootEnv           #
 # ========================== #
 sub install_bootscript {
-    print BOLD BLUE "  Copying boot_script into the SD...\n";
-    cmd_echo("sudo cp $IMAGEDIR/boot_script $IMAGEDIR/boot/boot_script");
+	if ($DISPLAY_AUTODETECT eq 'y' ) {
+		print BOLD BLUE "  Copying boot_script into the SD...\n";
+		cmd_echo("sudo cp $IMAGEDIR/boot_script $IMAGEDIR/boot/boot_script");
+	}
 }
 
 1;

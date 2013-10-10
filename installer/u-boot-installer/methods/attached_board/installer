@@ -347,11 +347,13 @@ if ( $GENERATE_EXTERNAL_INSTALLER eq "y" ) {
 # iMX6 Installation
 if ( $EXECUTE_IMX_INSTALL eq "y" ) {
 	
-
-    if ( $INSTALLATION_MODE ne "kernel" && $INSTALLATION_MODE ne "fs" ) {
-
+    if ( ($INSTALLATION_MODE ne "kernel" 
+		&& $INSTALLATION_MODE ne "fs")
+	    && ($CONFIG_INSTALLER_MODE_ATTACHED_BOARD eq "y" 
+			|| defined $CONFIG_INSTALLER_BOOT_FROM_SD3
+			|| defined $CONFIG_INSTALLER_BOOT_FROM_SD4 ) ) {
         print
-"  Make sure your board is conected to the PC via USB and the boot mode is properly configured. ";
+"  Make sure your board is conected to the PC via USB OTG and the boot mode is properly configured. ";
         print "Then press ENTER to continue\n  ";
         my $ANSWER = <STDIN>;
         chomp($ANSWER);
@@ -389,6 +391,11 @@ if ( $EXECUTE_IMX_INSTALL eq "y" ) {
             }
         }
     }
+    if ( $TFTP_KERNEL eq 'y' && ( $INSTALLATION_MODE eq "kernel" || $INSTALLATION_MODE eq "all") ) { # Install kernel for tftp
+		print BOLD BLUE "  Flashing Kernel image...\n";
+		print "    Copying the kernel into the tftp server path...\n";
+		cmd_echo("sudo cp $IMAGEDIR/kernel.uImage $TFTPDIR/$TFTP_KERNEL_IMAGE");
+	}
     return 1;
 }
 
@@ -1266,6 +1273,11 @@ sub install_cmdline {
 # ========================== #
 sub install_bootcmd() {
     my $BOOTCMD;
+    my $DISPLAY;
+    
+    if ( $DISPLAY_AUTODETECT eq 'y' ) {
+		$DISPLAY = "\${fs}load \${dtype} \${disk}:1 10008000 /boot_script&&source 10008000";
+	}
 
     if ( $FLASH_TYPE eq "OneNAND" ) {
         $BOOTCMD =
@@ -1278,11 +1290,11 @@ sub install_bootcmd() {
 			# Set boards iup method
 			set_ip_method();
 				$BOOTCMD =
-"for dtype in sata mmc ; do for disk in 0 1 ; do \${dtype} dev \${disk} ; for fs in fat ext2 ; do \${fs}load \${dtype} \${disk}:1 10008000 /boot_script&&source 10008000 ; done ; done ; done;$IP_METHOD;setenv serverip $HOST_IP; setenv loadaddr 0x10800000;tftp $TFTP_KERNEL_IMAGE; bootm";
+"for dtype in sata mmc ; do for disk in 0 1 ; do \${dtype} dev \${disk} ; for fs in fat ext2 ; do $DISPLAY ; done ; done ; done;$IP_METHOD;setenv serverip $HOST_IP; setenv loadaddr 0x10800000;tftp $TFTP_KERNEL_IMAGE; bootm";
 			}
 			else {
 				$BOOTCMD =
-"for dtype in sata mmc ; do for disk in 0 1 ; do \${dtype} dev \${disk} ; for fs in fat ext2 ; do \${fs}load \${dtype} \${disk}:1 10008000 /boot_script&&source 10008000;\${fs}load \${dtype} \${disk}:1 10800000 /uImage;done ; done ; done;bootm 10800000";
+"for dtype in sata mmc ; do for disk in 0 1 ; do \${dtype} dev \${disk} ; for fs in fat ext2 ; do $DISPLAY ;\${fs}load \${dtype} \${disk}:1 10800000 /uImage;done ; done ; done;bootm 10800000";
 			}
         }
         else {

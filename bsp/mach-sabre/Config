@@ -1,5 +1,5 @@
 #
-# Ridgerun BSP Configuration file for Centaurus board
+# Ridgerun BSP Configuration file for SabreLite board
 #
 
 config BSP_NET_HAS_ETH0

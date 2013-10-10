@@ -39,10 +39,13 @@ ifeq ($(CONFIG_UBOOT_QUICK_BOOT),y)
 	     fi
 endif
 
+arch_clean:
+	$(V) rm -rf arch_build gen_uboot_flashbin
+
+#arch_post_build:usb_loader_build
 arch_post_build:
 
 # iMX6 uses a .imx image instead of the .bin (imx image is a .bin image with a special header that is required 
 # in order to have an image that can be read by imx ROM Bootloader)
 copy_images::
 	$(V) cp src/u-boot.imx src/u-boot.bin
-

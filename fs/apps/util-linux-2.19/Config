@@ -1,5 +1,0 @@
-config FS_APPS_UTILS_LINUX
-	bool "utils-linux-2.19"
-	select FS_APPS_NCURSES
-	help
-	   Several linux utils

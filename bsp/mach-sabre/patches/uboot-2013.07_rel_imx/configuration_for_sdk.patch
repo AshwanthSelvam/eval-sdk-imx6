@@ -1,0 +1,68 @@
+Index: u-boot-2013.07/src/include/configs/nitrogen6x.h
+===================================================================
+--- u-boot-2013.07.orig/src/include/configs/nitrogen6x.h	2013-09-27 15:16:53.000000000 -0600
++++ u-boot-2013.07/src/include/configs/nitrogen6x.h	2013-09-27 17:46:13.153332909 -0600
+@@ -196,29 +196,52 @@
+ 
+ #define CONFIG_DRIVE_TYPES CONFIG_DRIVE_SATA CONFIG_DRIVE_MMC
+ 
++#define CONFIG_CMD_ENV                 /*Enable env command    */
++#define CONFIG_CMD_ASKENV              /*Enable askenv command */
++
+ #define CONFIG_EXTRA_ENV_SETTINGS \
+ 	"console=ttymxc1\0" \
+ 	"clearenv=if sf probe || sf probe || sf probe 1 ; then " \
+ 		"sf erase 0xc0000 0x2000 && " \
+ 		"echo restored environment to factory default ; fi\0" \
+-	"bootcmd=for dtype in " CONFIG_DRIVE_TYPES \
+-		"; do " \
++		"loadaddr=0x12000000\0" \
++		"loadbootenv=for dtype in sata mmc ; do " \
++			"for disk in 0 1 ; do ${dtype} dev ${disk} ;" \
++				"for fs in fat ; do " \
++					"${fs}load " \
++						"${dtype} ${disk}:1 " \
++						"${loadaddr} " \
++						"/uEnv.txt;" \
++				"done ; " \
++			"done ; " \
++		"done;\0 " \
++	"loaduimage=for dtype in sata mmc ; do " \
++			"for disk in 0 1 ; do ${dtype} dev ${disk} ;" \
++				"for fs in fat ext2 ; do " \
++					"${fs}load " \
++						"${dtype} ${disk}:1 " \
++						"${loadaddr} " \
++						"/uImage;" \
++				"done ; " \
++			"done ; " \
++		"done;\0 " \
++	"detectdisplays=for dtype in sata mmc ; do " \
+ 			"for disk in 0 1 ; do ${dtype} dev ${disk} ;" \
+ 				"for fs in fat ext2 ; do " \
+ 					"${fs}load " \
+ 						"${dtype} ${disk}:1 " \
+ 						"10008000 " \
+-						"/6x_bootscript" \
+-						"&& source 10008000 ; " \
++						"/boot_script&&source 10008000;" \
+ 				"done ; " \
+ 			"done ; " \
+-		"done; " \
+-		"setenv stdout serial,vga ; " \
+-		"echo ; echo 6x_bootscript not found ; " \
+-		"echo ; echo serial console at 115200, 8N1 ; echo ; " \
+-		"echo details at http://boundarydevices.com/6q_bootscript ; " \
+-		"usb start; " \
+-		"setenv stdin serial,usbkbd\0" \
++		"done;\0 " \
++	"importbootenv=echo Importing environment...; env import -t ${loadaddr} ${filesize}\0" \
++	"bootcmd=run loadbootenv ;" \
++			"run importbootenv ; " \
++			"run detectdisplays ;" \
++				"if test -n ${uenvcmd} ; then " \
++					"run uenvcmd; " \
++				"fi ;\0" \
+ 	"loadsplash=if sf probe ; then sf read ${splashimage} c2000 ${splashsize} ; fi\0" \
+ 	"upgradeu=for dtype in " CONFIG_DRIVE_TYPES \
+ 		"; do " \

@@ -1,1 +1,0 @@
-TARGET_REQUIRED="imx-lib libfslcodec libfslparser libfslvpuwrap firmware-imx libfslaacpcodec"

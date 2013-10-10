@@ -1,0 +1,8 @@
+config FS_APPS_LIB_FSL_AACP_CODEC_3_0_7
+	bool "libfslaacpcodec 3.0.7"
+	select FS_APPS_GSTREAMER
+	select FS_APPS_GSTREAMER_PLUGINS_BAD
+	select FS_APPS_GSTREAMER_PLUGINS_BASE
+	help
+	    This option enables aac plus codecs for freescale gstreamer
+	    plugins kernel version 3.0.35-4.0.0

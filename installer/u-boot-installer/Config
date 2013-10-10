@@ -37,6 +37,14 @@ config INSTALLER_MODE_SD_CARD_INSTALLER
 
 endchoice
 
+# Enable AutoDisplay detection
+
+config INSTALLER_AUTO_DISPLAY_DETECTION
+	bool "Automatic display configuration"
+	default n
+	help
+	    Automatically detects attached displays and configure the board according to that.
+
 # Load Kernel via TFTP Options
 
 config INSTALLER_MODE_TFTP_KERNEL
@@ -51,14 +59,14 @@ config INSTALLER_MODE_TFTP_KERNEL
 config INSTALLER_INSTALL_PRE_BOOTLOADER
 	bool "Install Pre-Bootloader in SPI-NOR"
 	default n
-	depends on INSTALLER_MODE_SD_CARD && MACH_MX6Q_SABRELITE
+	depends on INSTALLER_MODE_SD_CARD && (MACH_MX6Q_SABRELITE || MACH_MX6_NITROGEN6X)
 	help
 	  With this option enabled the SDK will install a pre-bootloader for either
 	  SD3 or SD4
 
 choice
     prompt "BootLoader Location"
-    depends on MACH_MX6Q_SABRELITE &&  INSTALLER_MODE_SD_CARD && INSTALLER_INSTALL_PRE_BOOTLOADER
+    depends on INSTALLER_INSTALL_PRE_BOOTLOADER
 
 #config INSTALLER_SPI_NOR_BOOT
 #	bool "SPI-NOR"

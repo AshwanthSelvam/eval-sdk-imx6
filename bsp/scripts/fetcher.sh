@@ -319,7 +319,7 @@ function unpack {
     echo "    Unpacking $PKG_TARBALL... "
     cd $DIRNAME
     case $PKG_TARBALL in
-        *.tar.gz )
+        *.tar.gz | *.tgz)
             tar $VERBOSE_ARGS $TAR_ARGS -xzf $DOWNLOADPATH/$PKG_TARBALL
             ;;
         *.tar.bz2 )
