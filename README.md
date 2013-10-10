@@ -17,7 +17,7 @@ SabreLite Documentation:
 * https://developer.ridgerun.com/wiki/index.php/RidgeRun_Turrialba_SDK_User_Guide
 
 
-Nitrogen6X Documentation:
+Nitrogen6X (1GB and 2GB versions) Documentation:
 
 * https://developer.ridgerun.com/wiki/index.php/Boundary_Devices_iMX6_Nitrogen6X_Board
 * https://developer.ridgerun.com/wiki/index.php/Getting_Started_Guide_for_iMX6_Nitrogen6X
