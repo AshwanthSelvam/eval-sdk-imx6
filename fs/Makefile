@@ -17,7 +17,9 @@ include $(DEVDIR)/bsp/mach/Make.conf
 # apps, toolchain and rrapps goes first as they may install generic
 # definitions arch and mach should be in that order to install custom
 # files myapps is last
-FS_COMPONENTS ?= host-apps apps $(DEVDIR)/toolchain rrapps arch mach proprietary_src myapps
+FS_COMPONENTS ?= host-apps apps $(DEVDIR)/toolchain rrapps arch mach proprietary_src yocto myapps
+
+FS_COMPONENTS_UNPATCH ?= host-apps apps rrapps proprietary_src yocto myapps
 
 # By default rrsdk class run ldconfig on install, we can speed up the process
 # when building the whole fs by running until the end
@@ -279,7 +281,7 @@ patch: $(foreach COMP, $(FS_COMPONENTS), $(COMP)_patch)
 
 buildfs: defs $(foreach COMP, $(FS_COMPONENTS), $(COMP)_buildfs)
 
-unpatch: $(foreach COMP, $(FS_COMPONENTS), $(COMP)_unpatch)
+unpatch :$(foreach COMP, $(FS_COMPONENTS_UNPATCH), $(COMP)_unpatch)
 
 clean: defs $(foreach COMP, $(FS_COMPONENTS), $(COMP)_clean)
 	$(V) rm -Rf config.site Apps.defs hostreqs $(FSROOT) $(FSDEVROOT)
