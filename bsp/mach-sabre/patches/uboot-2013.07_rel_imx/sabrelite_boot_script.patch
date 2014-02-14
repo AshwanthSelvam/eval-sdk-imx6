@@ -55,7 +55,7 @@ Index: u-boot-2013.07/src/board/boundary/nitrogen6x/boot_script.txt
 +	echo "---> No LCD monitor detected";
 +fi
 +
-+while test "3" -ne $nextcon ; do
++while test "4" -ne $nextcon ; do
 +	setenv bootargs $bootargs video=mxcfb${nextcon}:off ;
 +	setexpr nextcon $nextcon + 1 ;
 +done
