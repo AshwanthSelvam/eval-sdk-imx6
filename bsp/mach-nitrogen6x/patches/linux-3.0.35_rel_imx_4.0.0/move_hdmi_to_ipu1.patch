@@ -1,0 +1,13 @@
+Index: kernel/linux-3.0.35-4.0.0/arch/arm/mach-mx6/board-mx6_nitrogen6x.c
+===================================================================
+--- kernel.orig/linux-3.0.35-4.0.0/arch/arm/mach-mx6/board-mx6_nitrogen6x.c	2013-09-27 15:22:37.000000000 -0600
++++ kernel/linux-3.0.35-4.0.0/arch/arm/mach-mx6/board-mx6_nitrogen6x.c	2014-02-07 10:47:43.396042265 -0600
+@@ -866,7 +866,7 @@
+ };
+ 
+ static struct fsl_mxc_hdmi_core_platform_data hdmi_core_data = {
+-	.ipu_id = 0,
++	.ipu_id = 1,
+ 	.disp_id = 1,
+ };
+ 
