@@ -7,13 +7,26 @@
 type = framebuffer
 format = RGBP
 fb_num = 1
+main_fb_num = 0
+vsmax = 8
 
 [mon2]
 type = framebuffer
 format = RGBP
+fb_num = 3
+main_fb_num = 2
+vsmax = 8
+
+[mon2.2]
+type = framebuffer
+format = RGBP
 fb_num = 2
+main_fb_num = 2
+vsmax = 8
 
 [mon3]
 type = framebuffer
 format = RGBP
 fb_num = 4
+main_fb_num = 3
+vsmax = 8
