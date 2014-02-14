@@ -181,7 +181,7 @@ my $EXECUTE_IMX_INSTALL         = $CONFIG_BSP_MACH_INSTALLER_SUPPORTS_USB_BOOT;
 my $EXTERNAL_INSTALLER_DIR      = "$IMAGEDIR/installer";
 my $EXTERNAL_INSTALLER_REPLACE_STRINGS = "";
 my $UBOOT_OFFSET                       = 0;
-my $FS_ARGS = "root=/dev/mmcblk0p2 rootdelay=2 rootfstype=ext3  mem=364M";
+my $FS_ARGS = "root=/dev/mmcblk0p2 rootdelay=2 rootfstype=ext3  mem=864M";
 my $IP_METHOD;
 
 # Set bootloader to be installed
@@ -203,7 +203,7 @@ if ( $EXECUTE_IMX_INSTALL eq "y" ) {
 #fs
 if ( defined $CONFIG_FS_TARGET_NFSROOT ) {
     $FS_ARGS =
-      "root=/dev/nfs nfsroot=$HOST_IP:$DEVDIR/fs/fs rw ip=dhcp  mem=364M";
+      "root=/dev/nfs nfsroot=$HOST_IP:$DEVDIR/fs/fs rw ip=dhcp  mem=864M";
 }
 
 # ==============================================================================
