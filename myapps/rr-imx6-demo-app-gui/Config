@@ -1,0 +1,11 @@
+config FS_APPS_RR_IMX6_DEMO_APP_GUI
+	bool "RidgeRun iMX6 demo application with GUI"
+	default n
+	select FS_APPS_QT
+	select FS_APPS_QT_DBUS
+	select FS_APPS_TSLIB
+	select FS_APPS_QT_TSLIB
+	select FS_APPS_GSTD
+	help
+		This is a demos application showing the platform capabilities
+

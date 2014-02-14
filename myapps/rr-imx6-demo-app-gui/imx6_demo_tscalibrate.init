@@ -1,0 +1,89 @@
+#!/bin/sh
+
+export PATH=/bin:/sbin:/usr/bin:/usr/sbin
+
+
+count_displays()
+{
+
+# Create file with available Screens
+echo "#####Available Screens#####" > /etc/available-screens
+
+# Display Counter
+display_counter=0
+fb_counter=0
+bg_counter=0
+
+echo "-> Identifying available displays..."
+
+for display in `cat /sys/class/graphics/fb*/fsl_disp_dev_property` ; do # Read the available fb to determine its type
+	case $display in
+		overlay) # Overlay Buffer
+			echo "--> Using fb$fb_counter as overlay frame buffer for $last display.."
+			
+			# Indicating last fb has an overlay buffer
+			echo "DISP$(( $display_counter - 1 ))_has_overlay={yes}" >> /etc/available-screens 
+
+			# Reset BG fb couter
+			bg_counter=0
+		;;
+		*) # Main Frame buffer. Increment counter
+			echo "--> Using fb$fb_counter as main frame buffer for $display display.."
+			
+			# Updating Display name (for demo purposes)
+			echo "DISP${display_counter}_name={$display}" >> /etc/available-screens 
+			
+			# Save display number
+			last=$display
+			
+			# Check if last fb was a bg fb
+			if [ $bg_counter -eq 1 ]; then # Last Buffer was a bg
+				echo "DISP$(( $display_counter - 1 ))_has_overlay={no}" >> /etc/available-screens 
+			fi
+			
+			# Increment Displaycount
+			display_counter=$(( $display_counter + 1 ))
+			
+			# Increment bg fb couter (2 consecutive bg fb means last display doesn't have an overlay buffer)
+			bg_counter=$(( $bg_counter + 1 ))
+		;;
+	esac ;
+	
+	# Increment fb counter
+	fb_counter=$(( $fb_counter + 1 ))
+done
+
+echo "-> Using $display_counter displays..."
+
+# Write number of screens to file (It will be used by the demo)
+echo "AVAILABLE_SCREENS={$display_counter}" >> /etc/available-screens 
+}
+
+
+case "$1" in
+  start)  
+  
+	echo "Configuring Demo..."
+    killall psplash
+    count_displays
+    
+    #Init Demo
+	# Environment for fb0
+	if [ -f /etc/demo-env-fb0.sh ]; then
+	. /etc/demo-env-fb0.sh
+	else
+	echo "Environment file not available..."
+	fi
+	#Run Demo
+	echo "Starting Demo..."
+	RR-iMX6-Demo &
+  ;;
+  stop)
+	echo "Sotping Demo..."
+	killall RR-iMX6-Demo
+  ;;
+  *)
+    echo "$0 {start|stop}"
+  ;;
+esac   
+
