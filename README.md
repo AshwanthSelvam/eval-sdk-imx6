@@ -12,6 +12,7 @@ SabreLite Documentation:
 
 * https://developer.ridgerun.com/wiki/index.php/Boundary_Devices_iMX6_SabreLite_Board
 * https://developer.ridgerun.com/wiki/index.php/Getting_Started_Guide_for_iMX6_SabreLite
+* https://developer.ridgerun.com/wiki/index.php/IMX6_Demo_Application
 * https://developer.ridgerun.com/wiki/index.php/SDK_Turrialba_for_iMX6_SabreLite
 * https://developer.ridgerun.com/wiki/index.php/IMX6_GStreamer_Pipelines_-_SDK_Turrialba
 * https://developer.ridgerun.com/wiki/index.php/RidgeRun_Turrialba_SDK_User_Guide
@@ -21,6 +22,7 @@ Nitrogen6X (1GB and 2GB versions) Documentation:
 
 * https://developer.ridgerun.com/wiki/index.php/Boundary_Devices_iMX6_Nitrogen6X_Board
 * https://developer.ridgerun.com/wiki/index.php/Getting_Started_Guide_for_iMX6_Nitrogen6X
+* https://developer.ridgerun.com/wiki/index.php/IMX6_Demo_Application
 * https://developer.ridgerun.com/wiki/index.php/SDK_Turrialba_for_iMX6_Nitrogen6X
 * https://developer.ridgerun.com/wiki/index.php/IMX6_GStreamer_Pipelines_-_SDK_Turrialba
 * https://developer.ridgerun.com/wiki/index.php/RidgeRun_Turrialba_SDK_User_Guide
