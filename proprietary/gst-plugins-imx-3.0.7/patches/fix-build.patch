@@ -1,0 +1,12 @@
+Index: gst-plugins-imx-3.0.7/src/src/misc/v4l_sink/src/mfw_gst_fb.c
+===================================================================
+--- gst-plugins-imx-3.0.7.orig/src/src/misc/v4l_sink/src/mfw_gst_fb.c	2013-02-21 02:01:35.000000000 -0600
++++ gst-plugins-imx-3.0.7/src/src/misc/v4l_sink/src/mfw_gst_fb.c	2013-10-11 09:03:58.295842024 -0600
+@@ -45,6 +45,7 @@
+ //#include <linux/fb.h>
+ //#endif
+ 
++#include <sys/types.h>
+ #if ((defined (_MX233)) || (defined (_MX28)) )
+ #include <linux/fb.h>
+ #else
