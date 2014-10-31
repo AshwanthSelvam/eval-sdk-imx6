@@ -9,6 +9,7 @@
 <xsl:template match="/components">
 	<xsl:for-each select="component">
 		<xsl:value-of select="link"/><xsl:text>&#10;</xsl:text>
+		<xsl:value-of select="downloadLink"/><xsl:text>&#10;</xsl:text>
 	</xsl:for-each>
 </xsl:template>
 
