@@ -32,7 +32,7 @@ my $PREBOOTLOADER;
 my $SPI_INIT;
 my $SD_DEVICE = $CONFIG_INSTALLER_SD_DEVICE;
 my $DFUUTIL = "$DEVDIR/bootloader/$BOOTLOADER/src/tools/dfu-util/src/dfu-util";
-my $USBUTIL = "$DEVDIR/fs/host-apps/usb_loader";
+my $USBUTIL = "$DEVDIR/fs/host-apps/usb_loader/src";
 
 my $FLASH_WRITE_CMD;
 my $FLASH_WRITE_IPL_CMD;
@@ -181,7 +181,6 @@ my $EXECUTE_IMX_INSTALL         = $CONFIG_BSP_MACH_INSTALLER_SUPPORTS_USB_BOOT;
 my $EXTERNAL_INSTALLER_DIR      = "$IMAGEDIR/installer";
 my $EXTERNAL_INSTALLER_REPLACE_STRINGS = "";
 my $UBOOT_OFFSET                       = 0;
-my $FS_ARGS = "root=/dev/mmcblk0p2 rootdelay=2 rootfstype=ext3  mem=864M";
 my $IP_METHOD;
 
 # Set bootloader to be installed
@@ -200,11 +199,6 @@ if ( $EXECUTE_IMX_INSTALL eq "y" ) {
     }
 }
 
-#fs
-if ( defined $CONFIG_FS_TARGET_NFSROOT ) {
-    $FS_ARGS =
-      "root=/dev/nfs nfsroot=$HOST_IP:$DEVDIR/fs/fs rw ip=dhcp  mem=864M";
-}
 
 # ==============================================================================
 # 							PARAMETERS
@@ -1273,12 +1267,24 @@ sub install_cmdline {
 # ========================== #
 sub install_bootcmd() {
     my $BOOTCMD;
-    my $DISPLAY;
-    
-    if ( $DISPLAY_AUTODETECT eq 'y' ) {
-		$DISPLAY = "\${fs}load \${dtype} \${disk}:1 10008000 /boot_script&&source 10008000";
-	}
-
+    my $BOOTDEVS="sata mmc usb";
+    my $DEFAULT_ENV = "for dtype in $BOOTDEVS ; do " .
+							"if itest.s \"xusb\" == \"x\${dtype}\" ; then " .
+								"usb start ;" .
+							"fi; " . 
+							"for disk in 0 1 ; do " .
+								"\${dtype} dev \${disk} ;" .
+								"for fs in fat ext2 ; do " .
+									"${fs}load \${dtype} \${disk}:1 10008000 /6x_bootscript && source 10008000 ; " .
+								"done ; " .
+							"done ; " .
+						"done; " . 
+						"setenv stdout serial,vga ; " .
+						"echo ; echo 6x_bootscript not found ; " .
+						"echo ; echo serial console at 115200, 8N1 ; echo ; " .
+						"echo details at http://boundarydevices.com/6q_bootscript ; " .
+						"setenv stdin serial,usbkbd";
+   
     if ( $FLASH_TYPE eq "OneNAND" ) {
         $BOOTCMD =
 "onenand read $CONFIG_INSTALLER_LOAD_ADDRS \\${kerneloffset} \\${ksize}\; bootm $CONFIG_INSTALLER_LOAD_ADDRS";
@@ -1289,12 +1295,22 @@ sub install_bootcmd() {
 			if ( $TFTP_KERNEL eq 'y' ) { # Boot via TFTP
 			# Set boards iup method
 			set_ip_method();
-				$BOOTCMD =
-"for dtype in sata mmc ; do for disk in 0 1 ; do \${dtype} dev \${disk} ; for fs in fat ext2 ; do $DISPLAY ; done ; done ; done;$IP_METHOD;setenv serverip $HOST_IP; setenv loadaddr 0x10800000;tftp $TFTP_KERNEL_IMAGE; bootm";
+				$BOOTCMD =  "$DEFAULT_ENV ; " .
+							"$IP_METHOD; " .
+							"setenv serverip $HOST_IP; " .
+							"setenv loadaddr 0x10800000; " .
+							"tftp $TFTP_KERNEL_IMAGE; bootm; ";
 			}
 			else {
-				$BOOTCMD =
-"for dtype in sata mmc ; do for disk in 0 1 ; do \${dtype} dev \${disk} ; for fs in fat ext2 ; do $DISPLAY ;\${fs}load \${dtype} \${disk}:1 10800000 /uImage;done ; done ; done;bootm 10800000";
+				$BOOTCMD = "$DEFAULT_ENV ; " .
+							"for dtype in sata mmc ; do " .
+								"for disk in 0 1 ; do " .
+									"\${dtype} dev \${disk} ; " .
+									"for fs in fat ext2 ; do " .
+										"\${fs}load \${dtype} \${disk}:1 10800000 /uImage && bootm 10800000; " .
+									"done ; " .
+								"done ; " .
+							"done; ";
 			}
         }
         else {
