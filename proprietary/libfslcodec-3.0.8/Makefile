@@ -15,7 +15,7 @@ APPS_LDFLAGS+=-Wl,-rpath-link -Wl,$(FSDEVROOT)/usr/lib/imx-mm/video-codec/
 APPS_LDFLAGS+=-Wl,-rpath-link -Wl,$(FSDEVROOT)/usr/lib/imx-mm/audio-codec/wrap/
 
 
-ifeq ($(CONFIG_HARDFP),y)
+ifeq ($(CONFIG_TOOLCHAIN_HARDFP),y)
     FHW= _fhw
     APPS_LDFLAGS+=-Wl,-rpath-link -Wl,$(FSDEVROOT)/usr/lib/imx-mm/audio-codec/fhw
     AUTOTOOLS_PARAMS+= --enable-fhw

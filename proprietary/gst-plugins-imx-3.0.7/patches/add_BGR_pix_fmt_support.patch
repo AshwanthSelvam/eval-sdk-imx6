@@ -1,0 +1,12 @@
+Index: gst-plugins-imx-3.0.7/src/libs/vss/mfw_gst_vss_common.c
+===================================================================
+--- gst-plugins-imx-3.0.7.orig/src/libs/vss/mfw_gst_vss_common.c	2013-02-21 02:01:16.000000000 -0600
++++ gst-plugins-imx-3.0.7/src/libs/vss/mfw_gst_vss_common.c	2014-10-20 10:57:16.573475705 -0600
+@@ -147,6 +147,7 @@
+       bits = 24;
+       break;
+     case IPU_PIX_FMT_RGB32:
++    case IPU_PIX_FMT_BGR32:
+       bits = 32;
+       break;
+   }

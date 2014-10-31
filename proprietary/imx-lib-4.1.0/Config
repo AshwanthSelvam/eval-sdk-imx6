@@ -1,0 +1,5 @@
+config FS_APPS_IMX_LIB_4_1_0
+	bool "imx-lib 3.0.35-4.1.0"
+	help
+	    This option enables imx lib for iMX6 processor, kernel version 
+	    3.0.35-4.1.0

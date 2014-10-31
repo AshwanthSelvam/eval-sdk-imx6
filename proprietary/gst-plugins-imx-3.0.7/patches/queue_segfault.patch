@@ -1,0 +1,120 @@
+Index: gst-plugins-imx-3.0.7/src/src/misc/v4l_source/src/mfw_gst_v4lsrc.c
+===================================================================
+--- gst-plugins-imx-3.0.7.orig/src/src/misc/v4l_source/src/mfw_gst_v4lsrc.c	2014-06-02 18:15:33.910887020 -0600
++++ gst-plugins-imx-3.0.7/src/src/misc/v4l_source/src/mfw_gst_v4lsrc.c	2014-06-02 18:15:34.310887021 -0600
+@@ -64,6 +64,9 @@
+ =============================================================================*/
+ /* None */
+ #define DEFAULT_QUEUE_SIZE 6
++#define NO_BUFFER_WAIT_COUNT   200
++#define NO_BUFFER_WAIT_TIME_MS 5
++
+ /*=============================================================================
+                 LOCAL TYPEDEFS (STRUCTURES, UNIONS, ENUMS)
+ =============================================================================*/
+@@ -271,11 +274,13 @@
+     buf = (GstBuffer *) (v4l_src->buffers[num]);
+     GST_BUFFER_FLAG_SET (buf, GST_BUFFER_FLAG_LAST);
+ 
++    g_mutex_lock (v4l_src->pool_lock);
+     if (g_list_find (v4l_src->free_pool, (gpointer) (num)))
+-      GST_WARNING ("something wrong here, v4l buffer index:%d already in queue",
+-          num);
++        GST_WARNING ("something wrong here, v4l buffer index:%d already in queue",
++                num);
+     else
+-      GST_LOG ("v4l buffer index:%d will be push in pool", num);
++        GST_LOG ("v4l buffer index:%d will be push in pool", num);
++    g_mutex_unlock (v4l_src->pool_lock);
+ 
+     memset (&v4lbuf, 0, sizeof (v4lbuf));
+     v4lbuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+@@ -287,7 +292,9 @@
+       return;
+     }
+ 
++    g_mutex_lock (v4l_src->pool_lock);
+     v4l_src->free_pool = g_list_append (v4l_src->free_pool, (gpointer) num);
++    g_mutex_unlock (v4l_src->pool_lock);
+     GST_LOG_OBJECT (v4l_src, "freeing buffer %p for frame %d", v4lsrc_buffer,
+         num);
+     gst_buffer_ref (GST_BUFFER_CAST (v4lsrc_buffer));
+@@ -371,6 +378,8 @@
+ 
+   }
+ 
++  v4l_src->pool_lock = g_mutex_new ();
++
+   /* Switch ON the capture device */
+   type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+   if (ioctl (v4l_src->fd_v4l, VIDIOC_STREAMON, &type) < 0) {
+@@ -424,6 +433,9 @@
+   if (v4l_src->buffers)
+     g_free (v4l_src->buffers);
+ 
++  g_mutex_free (v4l_src->pool_lock);
++  v4l_src->pool_lock = NULL;
++
+   return 0;
+ }
+ 
+@@ -1200,21 +1212,34 @@
+   gint fps_n, fps_d;
+   struct v4l2_buffer v4lbuf;
+   GstClockTime ts, res;
++  gint wait_cnt = 0;
+ 
+   v4l_src->count++;
+   memset (&v4lbuf, 0, sizeof (v4lbuf));
+   v4lbuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+   v4lbuf.memory = V4L2_MEMORY_MMAP;
+ 
+-  if (g_list_length (v4l_src->free_pool) == 0) {
+-    GST_WARNING ("no buffer available in pool");
+-    return NULL;
++  while (g_list_length (v4l_src->free_pool) == 0) {
++      GST_WARNING ("no buffer available in pool");
++      g_usleep(NO_BUFFER_WAIT_TIME_MS*1000);
++      wait_cnt ++;
++      if (wait_cnt >= NO_BUFFER_WAIT_COUNT) {
++          GST_ERROR ("no buffer available in %d ms", NO_BUFFER_WAIT_TIME_MS*NO_BUFFER_WAIT_COUNT);
++          return NULL;
++      }
++
++      if (v4l_src->stop == TRUE) {
++          GST_WARNING("v4l src stopped.");
++          return NULL;
++      }
+   }
+ 
+   if (ioctl (v4l_src->fd_v4l, VIDIOC_DQBUF, &v4lbuf) < 0) {
+     GST_ERROR (">>V4L_SRC: VIDIOC_DQBUF failed.");
+     return NULL;
+   }
++
++  g_mutex_lock (v4l_src->pool_lock);
+   if (g_list_find (v4l_src->free_pool, (gpointer) (v4lbuf.index)))
+     GST_LOG ("v4l buffer index:%d will be used outside", v4lbuf.index);
+   else
+@@ -1222,6 +1247,7 @@
+ 
+   v4l_src->free_pool =
+       g_list_remove (v4l_src->free_pool, (gpointer) (v4lbuf.index));
++  g_mutex_unlock (v4l_src->pool_lock);
+ 
+ 
+   buf = (GstBuffer *) (v4l_src->buffers[v4lbuf.index]);
+Index: gst-plugins-imx-3.0.7/src/src/misc/v4l_source/src/mfw_gst_v4lsrc.h
+===================================================================
+--- gst-plugins-imx-3.0.7.orig/src/src/misc/v4l_source/src/mfw_gst_v4lsrc.h	2013-02-21 02:01:38.000000000 -0600
++++ gst-plugins-imx-3.0.7/src/src/misc/v4l_source/src/mfw_gst_v4lsrc.h	2014-06-02 18:18:40.174887735 -0600
+@@ -109,7 +109,9 @@
+   int g_display_lcd;
+   int queue_size;               /* v4l request buffer number */
+   GList *free_pool;             /* pool for v4l buffers. */
++  GMutex *pool_lock;            /* lock for buffer pool operation */
+   gboolean start;
++  gboolean stop;
+ } MFWGstV4LSrc;
+ 
+ typedef struct MFW_GST_V4LSRC_INFO_CLASS_S

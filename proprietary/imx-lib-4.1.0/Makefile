@@ -5,8 +5,8 @@
 include ../../bsp/classes/rrsdk.class
 include ../../bsp/classes/fetcher.defs
 
-PKG_TARBALL=imx-lib-3.0.35-4.0.0.tar.gz
-PKG_SHA1SUM=244ad950b6746cb86a50330afae9c1bc44300aff
+PKG_TARBALL=imx-lib-3.0.35-4.1.0.tar.gz
+PKG_SHA1SUM=cdea41afe5b5d8a7daf1637738f51bf600e229b9
 FETCHER_EXTRACT_DIRECTORY_NAME=src
 
 LIBRARIES=
@@ -21,8 +21,8 @@ PLATFORM=IMX6Q
 
 DEST_DIR=$FSDEVROOT
 
-LIBRARIES=/usr/lib/{libipu.so.0,libpxp.so.0,libfsl_shw.so.0,libvpu.so.4}
-LINKS=/usr/lib/{libipu.so,libpxp.so,libfsl_shw.so,libvpu.so}
+LIBRARIES=/usr/lib/{libipu.so.0,libpxp.so.0,libfsl_shw.so.0}
+LINKS=/usr/lib/{libipu.so,libpxp.so,libfsl_shw.so}
 
 build:rrfetched
 	 $(V)$(MAKE) -C src PLATFORM=$(PLATFORM) INCLUDE=$(INCLUDE)
