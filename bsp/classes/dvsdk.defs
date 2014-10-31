@@ -492,7 +492,7 @@ c6accel_v4_clean: c6accel_clean
 
 .PHONY: c6accel_install
 
-c6accel_build:
+c6accel_build: ce_check_for_rebuild
 	$(V) $(MAKE) -C $(FETCHER_EXTRACT_DIRECTORY_NAME) c6accel $(QOUT) $(ERRQOUT)
 	$(V) touch $@
 
@@ -554,8 +554,7 @@ ce_check_for_rebuild_install:
 ce_check_for_rebuild_uninstall:
 
 ce_build:
-	# first do a clean since dvsdk comes with codec engine pre-built
-	$(V) $(MAKE) -C $(FETCHER_EXTRACT_DIRECTORY_NAME) ce_clean $@ $(QOUT) $(ERRQOUT)
+	$(V) $(MAKE) -C $(FETCHER_EXTRACT_DIRECTORY_NAME) $@ $(QOUT) $(ERRQOUT)
 	$(V) touch $@
 
 ce_clean:
