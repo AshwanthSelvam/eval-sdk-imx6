@@ -1,5 +1,5 @@
 #$L$
-# Copyright (C) 2011-2013 Ridgerun (http://www.ridgerun.com). 
+# Copyright (C) 2011-2014 Ridgerun (http://www.ridgerun.com). 
 #$L$
 
 export DEVDIR=$(PWD)
@@ -58,14 +58,22 @@ buildfs:: .oscheck header $(foreach COMP, $(COMPONENTS), $(COMP)_buildfs)
 #Special seek for ti-flash-utils and patch remove
 TI_FLASH_UTILS=$(shell find bootloader -name 'ti-flash-utils')
 unpatch_noheader: $(foreach COMP, $(COMPONENTS), $(COMP)_unpatch)
-	$(V)if [ -n "$(TI_FLASH_UTILS)" ] ; then \
+	if [ -d "$(TI_FLASH_UTILS)" ] ; then \
 		cd $(TI_FLASH_UTILS) ; \
 		make unpatch ; \
 	fi;
 
 unpatch:: .oscheck header unpatch_noheader
 
-clean:: .oscheck header $(foreach COMP, $(COMPONENTS), $(COMP)_clean)
+confirm_clean:
+	$(V) $(ECHO) "$(WARN_COLOR)WARNING:$(NORMAL_COLOR) You are about to clean your DEVDIR."
+	$(V) read -p  "  Do you want to continue [Y/n] " user_confirmed ; \
+	  if [ -z $$user_confirmed ] || [ $$user_confirmed != "y" -a $$user_confirmed != "Y" ] ; then \
+	    $(ECHO) "User did not confirmed." ; \
+	    exit 255 ; \
+	  fi
+
+clean:: confirm_clean .oscheck header $(foreach COMP, $(COMPONENTS), $(COMP)_clean)
 	@$(MAKE) -C bsp clean $(MAKE_CALL_PARAMS)
 	$(V)rm -rf images/*
 	$(V)rm .oscheck .system.id
@@ -263,7 +271,7 @@ copyrights::
 	$(V) $(ECHO) "Generating copyrights..."
 	$(V) cd bsp/scripts/copyright && ./copyright_handling.sh
 
-copyrights_check::
+copyrights_check:: copyrights
 	$(V) $(ECHO) "Checking copyrights links..."
 	$(V) cd bsp/scripts/copyright && ./copyrights_check.sh $(QOUT)
 
