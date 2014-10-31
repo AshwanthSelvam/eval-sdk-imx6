@@ -1,0 +1,42 @@
+Index: kernel/linux-3.0.35-4.1.0/drivers/media/platform/mxc/capture/tc358743_h2c.c
+===================================================================
+--- kernel.orig/linux-3.0.35-4.1.0/drivers/media/platform/mxc/capture/tc358743_h2c.c	2014-09-25 12:02:46.910679691 -0600
++++ kernel/linux-3.0.35-4.1.0/drivers/media/platform/mxc/capture/tc358743_h2c.c	2014-09-25 12:05:09.670680241 -0600
+@@ -2935,6 +2935,12 @@
+ 	if (!td)
+ 		return len;
+ 	mutex_lock(&td->access_lock);
++	
++	// Header 
++	len += sprintf(buf+len, "\nadds:");
++	for (i = 0; i < 16; i++)
++		len += sprintf(buf+len, " |%02X", i);
++	
+ 	for (i=0; i<DUMP_LENGTH; ) {
+ 		u32 u32val = 0;
+ 		int reg = regoffs+i;
+@@ -2946,13 +2952,17 @@
+ 			retval = 1;
+ 		}
+ 		if (!(i & 0xf))
+-			len += sprintf(buf+len, "\n%04X:", reg);
+-		if (size == 1)
+-			len += sprintf(buf+len, " %02X", u32val&0xff);
+-		else if (size == 2)
+-			len += sprintf(buf+len, " %04X", u32val&0xffff);
+-		else
+-			len += sprintf(buf+len, " %08X", u32val);
++			len += sprintf(buf+len, "\n%03X%s:", reg >> 4, "X");
++		if (size == 0) {
++			len += sprintf(buf+len, " |xx");
++			i += 1;
++		}
++		if (size > 0)
++			len += sprintf(buf+len, " |%02X", u32val&0xff);
++		if (size > 1)
++			len += sprintf(buf+len, " |%02X", (u32val&0xff00) >> 8);
++		if (size > 2)
++			len += sprintf(buf+len, " |%02X |%02X", (u32val&0xFF0000)>>16, (u32val&0xFF000000)>>24);
+ 		i += size;
+ 	}
+ 	mutex_unlock(&td->access_lock);

@@ -1,7 +1,7 @@
-Index: kernel/linux-3.0.35-4.0.0/drivers/video/logo/Kconfig
+Index: kernel/linux-3.0.35-4.1.0/drivers/video/logo/Kconfig
 ===================================================================
---- kernel.orig/linux-3.0.35-4.0.0/drivers/video/logo/Kconfig	2014-02-07 11:07:52.076035389 -0600
-+++ kernel/linux-3.0.35-4.0.0/drivers/video/logo/Kconfig	2014-02-07 11:10:46.492034397 -0600
+--- kernel.orig/linux-3.0.35-4.1.0/drivers/video/logo/Kconfig	2014-02-07 11:07:52.076035389 -0600
++++ kernel/linux-3.0.35-4.1.0/drivers/video/logo/Kconfig	2014-02-07 11:10:46.492034397 -0600
 @@ -81,5 +81,9 @@
  	bool "224-color M32R Linux logo"
  	depends on M32R
@@ -12,10 +12,10 @@ Index: kernel/linux-3.0.35-4.0.0/drivers/video/logo/Kconfig
 +	default y
  
  endif # LOGO
-Index: kernel/linux-3.0.35-4.0.0/drivers/video/logo/Makefile
+Index: kernel/linux-3.0.35-4.1.0/drivers/video/logo/Makefile
 ===================================================================
---- kernel.orig/linux-3.0.35-4.0.0/drivers/video/logo/Makefile	2014-02-07 11:07:52.088035389 -0600
-+++ kernel/linux-3.0.35-4.0.0/drivers/video/logo/Makefile	2014-02-07 11:10:46.492034397 -0600
+--- kernel.orig/linux-3.0.35-4.1.0/drivers/video/logo/Makefile	2014-02-07 11:07:52.088035389 -0600
++++ kernel/linux-3.0.35-4.1.0/drivers/video/logo/Makefile	2014-02-07 11:10:46.492034397 -0600
 @@ -15,6 +15,7 @@
  obj-$(CONFIG_LOGO_SUPERH_VGA16)		+= logo_superh_vga16.o
  obj-$(CONFIG_LOGO_SUPERH_CLUT224)	+= logo_superh_clut224.o
@@ -24,10 +24,10 @@ Index: kernel/linux-3.0.35-4.0.0/drivers/video/logo/Makefile
  
  obj-$(CONFIG_SPU_BASE)			+= logo_spe_clut224.o
  
-Index: kernel/linux-3.0.35-4.0.0/drivers/video/logo/logo.c
+Index: kernel/linux-3.0.35-4.1.0/drivers/video/logo/logo.c
 ===================================================================
---- kernel.orig/linux-3.0.35-4.0.0/drivers/video/logo/logo.c	2014-02-07 11:07:52.100035389 -0600
-+++ kernel/linux-3.0.35-4.0.0/drivers/video/logo/logo.c	2014-02-07 11:10:46.492034397 -0600
+--- kernel.orig/linux-3.0.35-4.1.0/drivers/video/logo/logo.c	2014-02-07 11:07:52.100035389 -0600
++++ kernel/linux-3.0.35-4.1.0/drivers/video/logo/logo.c	2014-02-07 11:10:46.492034397 -0600
 @@ -63,6 +63,10 @@
  	}
  	
@@ -39,10 +39,10 @@ Index: kernel/linux-3.0.35-4.0.0/drivers/video/logo/logo.c
  #ifdef CONFIG_LOGO_LINUX_CLUT224
  		/* Generic Linux logo */
  		logo = &logo_linux_clut224;
-Index: kernel/linux-3.0.35-4.0.0/drivers/video/logo/logo_ridgerun_clut224.ppm
+Index: kernel/linux-3.0.35-4.1.0/drivers/video/logo/logo_ridgerun_clut224.ppm
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ kernel/linux-3.0.35-4.0.0/drivers/video/logo/logo_ridgerun_clut224.ppm	2014-02-07 11:10:46.516034397 -0600
++++ kernel/linux-3.0.35-4.1.0/drivers/video/logo/logo_ridgerun_clut224.ppm	2014-02-07 11:10:46.516034397 -0600
 @@ -0,0 +1,154804 @@
 +P3
 +# CREATOR: GIMP PNM Filter Version 1.1
@@ -154848,10 +154848,10 @@ Index: kernel/linux-3.0.35-4.0.0/drivers/video/logo/logo_ridgerun_clut224.ppm
 +0
 +0
 +0
-Index: kernel/linux-3.0.35-4.0.0/drivers/video/fbmem.c
+Index: kernel/linux-3.0.35-4.1.0/drivers/video/fbmem.c
 ===================================================================
---- kernel.orig/linux-3.0.35-4.0.0/drivers/video/fbmem.c	2014-02-07 11:07:52.064035389 -0600
-+++ kernel/linux-3.0.35-4.0.0/drivers/video/fbmem.c	2014-02-07 11:10:46.520034397 -0600
+--- kernel.orig/linux-3.0.35-4.1.0/drivers/video/fbmem.c	2014-02-07 11:07:52.064035389 -0600
++++ kernel/linux-3.0.35-4.1.0/drivers/video/fbmem.c	2014-02-07 11:10:46.520034397 -0600
 @@ -659,8 +659,10 @@
  {
  	int y;
@@ -154864,10 +154864,10 @@ Index: kernel/linux-3.0.35-4.0.0/drivers/video/fbmem.c
  	y = fb_show_extra_logos(info, y, rotate);
  
  	return y;
-Index: kernel/linux-3.0.35-4.0.0/include/linux/linux_logo.h
+Index: kernel/linux-3.0.35-4.1.0/include/linux/linux_logo.h
 ===================================================================
---- kernel.orig/linux-3.0.35-4.0.0/include/linux/linux_logo.h	2013-09-27 15:22:26.000000000 -0600
-+++ kernel/linux-3.0.35-4.0.0/include/linux/linux_logo.h	2014-02-07 11:19:43.528031344 -0600
+--- kernel.orig/linux-3.0.35-4.1.0/include/linux/linux_logo.h	2013-09-27 15:22:26.000000000 -0600
++++ kernel/linux-3.0.35-4.1.0/include/linux/linux_logo.h	2014-02-07 11:19:43.528031344 -0600
 @@ -47,6 +47,7 @@
  extern const struct linux_logo logo_superh_clut224;
  extern const struct linux_logo logo_m32r_clut224;

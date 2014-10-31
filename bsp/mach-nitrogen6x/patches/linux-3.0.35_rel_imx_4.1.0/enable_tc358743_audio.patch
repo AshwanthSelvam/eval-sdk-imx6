@@ -1,0 +1,48 @@
+Index: kernel/linux-3.0.35-4.1.0/arch/arm/mach-mx6/board-mx6_nitrogen6x.c
+===================================================================
+--- kernel.orig/linux-3.0.35-4.1.0/arch/arm/mach-mx6/board-mx6_nitrogen6x.c	2014-09-23 18:19:51.000548523 -0600
++++ kernel/linux-3.0.35-4.1.0/arch/arm/mach-mx6/board-mx6_nitrogen6x.c	2014-09-25 11:56:20.530678208 -0600
+@@ -645,7 +645,7 @@
+ 
+ static struct mxc_audio_platform_data tc_audio_data = {
+ 	.ssi_num = 2,
+-	.src_port = 3,
++	.src_port = 7,
+ 	.ext_port = 5,
+ 	.hp_gpio = -1,
+ };
+@@ -1497,10 +1497,11 @@
+ 
+ static int imx6_init_audio(void)
+ {
++#ifdef CONFIG_SND_SOC_SGTL5000
+ 	mxc_register_device(&audio_device,
+ 			    &audio_data);
+ 	imx6q_add_imx_ssi(1, &ssi_pdata);
+-#ifdef CONFIG_SND_SOC_SGTL5000
++
+ 	platform_device_register(&sgtl5000_vdda_reg_devices);
+ 	platform_device_register(&sgtl5000_vddio_reg_devices);
+ 	platform_device_register(&sgtl5000_vddd_reg_devices);
+Index: kernel/linux-3.0.35-4.1.0/drivers/media/platform/mxc/capture/tc358743_h2c.c
+===================================================================
+--- kernel.orig/linux-3.0.35-4.1.0/drivers/media/platform/mxc/capture/tc358743_h2c.c	2014-09-23 18:19:50.992548523 -0600
++++ kernel/linux-3.0.35-4.1.0/drivers/media/platform/mxc/capture/tc358743_h2c.c	2014-09-25 12:02:46.910679691 -0600
+@@ -981,6 +981,8 @@
+ // HDMI Audio
+   {0x8531, 0x00000001, 0x00000000, 1, 0},
+   {0x8630, 0x00041eb0, 0x00000000, 1, 0},
++  {0x8631, 0x0000001e, 0x00000000, 1, 0},
++  {0x8632, 0x00000004, 0x00000000, 1, 0},
+   {0x8670, 0x00000001, 0x00000000, 1, 0},
+ // HDMI PHY
+   {0x8532, 0x00000080, 0x00000000, 1, 0},
+@@ -1342,7 +1344,7 @@
+ 		}
+ 		p++;
+ 	}
+-	pr_err("%s:reg=%x size is not defined\n",__func__, reg);
++	pr_debug("%s:reg=%x size is not defined\n",__func__, reg);
+ 	return 0;
+ }
+ 

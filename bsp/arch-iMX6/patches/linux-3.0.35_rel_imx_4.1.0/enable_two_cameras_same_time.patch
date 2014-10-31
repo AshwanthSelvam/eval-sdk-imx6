@@ -1,7 +1,7 @@
-Index: kernel/linux-3.0.35-4.0.0/drivers/media/video/mxc/capture/ipu_csi_enc.c
+Index: kernel/linux-3.0.35-4.1.0/drivers/media/platform/mxc/capture/ipu_csi_enc.c
 ===================================================================
---- kernel.orig/linux-3.0.35-4.0.0/drivers/media/video/mxc/capture/ipu_csi_enc.c	2013-10-07 14:42:58.927083104 -0600
-+++ kernel/linux-3.0.35-4.0.0/drivers/media/video/mxc/capture/ipu_csi_enc.c	2013-10-07 14:44:19.031082649 -0600
+--- kernel.orig/linux-3.0.35-4.1.0/drivers/media/platform/mxc/capture/ipu_csi_enc.c	2013-10-07 14:42:58.927083104 -0600
++++ kernel/linux-3.0.35-4.1.0/drivers/media/platform/mxc/capture/ipu_csi_enc.c	2013-10-07 14:44:19.031082649 -0600
 @@ -56,6 +56,24 @@
  }
  
@@ -140,10 +140,10 @@ Index: kernel/linux-3.0.35-4.0.0/drivers/media/video/mxc/capture/ipu_csi_enc.c
  
  	return ipu_disable_csi(cam->ipu, cam->csi);
  }
-Index: kernel/linux-3.0.35-4.0.0/drivers/media/video/mxc/capture/mxc_v4l2_capture.c
+Index: kernel/linux-3.0.35-4.1.0/drivers/media/platform/mxc/capture/mxc_v4l2_capture.c
 ===================================================================
---- kernel.orig/linux-3.0.35-4.0.0/drivers/media/video/mxc/capture/mxc_v4l2_capture.c	2013-10-07 14:42:58.939083104 -0600
-+++ kernel/linux-3.0.35-4.0.0/drivers/media/video/mxc/capture/mxc_v4l2_capture.c	2013-10-07 14:43:15.471083010 -0600
+--- kernel.orig/linux-3.0.35-4.1.0/drivers/media/platform/mxc/capture/mxc_v4l2_capture.c	2013-10-07 14:42:58.939083104 -0600
++++ kernel/linux-3.0.35-4.1.0/drivers/media/platform/mxc/capture/mxc_v4l2_capture.c	2013-10-07 14:43:15.471083010 -0600
 @@ -429,7 +429,7 @@
  		list_del(cam->ready_q.next);
  		list_add_tail(&frame->queue, &cam->working_q);
@@ -180,10 +180,10 @@ Index: kernel/linux-3.0.35-4.0.0/drivers/media/video/mxc/capture/mxc_v4l2_captur
  				&cam->ping_pong_csi);
  	}
  
-Index: kernel/linux-3.0.35-4.0.0/drivers/media/video/mxc/capture/mxc_v4l2_capture.h
+Index: kernel/linux-3.0.35-4.1.0/drivers/media/platform/mxc/capture/mxc_v4l2_capture.h
 ===================================================================
---- kernel.orig/linux-3.0.35-4.0.0/drivers/media/video/mxc/capture/mxc_v4l2_capture.h	2013-10-07 14:42:58.963083104 -0600
-+++ kernel/linux-3.0.35-4.0.0/drivers/media/video/mxc/capture/mxc_v4l2_capture.h	2013-10-07 14:43:15.471083010 -0600
+--- kernel.orig/linux-3.0.35-4.1.0/drivers/media/platform/mxc/capture/mxc_v4l2_capture.h	2013-10-07 14:42:58.963083104 -0600
++++ kernel/linux-3.0.35-4.1.0/drivers/media/platform/mxc/capture/mxc_v4l2_capture.h	2013-10-07 14:43:15.471083010 -0600
 @@ -178,7 +178,7 @@
  	struct v4l2_rect crop_defrect;
  	struct v4l2_rect crop_current;

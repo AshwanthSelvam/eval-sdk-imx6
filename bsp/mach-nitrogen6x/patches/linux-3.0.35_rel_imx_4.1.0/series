@@ -1,0 +1,6 @@
+move_hdmi_to_ipu1.patch
+#add_tc358743_driver.patch
+avoid_lcd_pads_enable_when_tc358743_audio_enabled.patch
+enable_tc358743_audio.patch
+update_tc358743_regdump_sysfs_entry.patch
+update_gs2971_driver.patch
