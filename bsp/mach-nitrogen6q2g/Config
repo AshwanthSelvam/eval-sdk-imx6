@@ -2,14 +2,6 @@
 # Ridgerun BSP Configuration file for Nitrogen6Q2G board
 #
 
-
-config FS_YOCTO_SUPPORT
-	bool
-	default y
-	help
-	     Enables Yocto support for the platform.
-
-
 config BSP_NET_HAS_ETH0
 	bool
 	select BSP_NET_HAS_NET

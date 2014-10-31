@@ -1,7 +1,7 @@
 Index: u-boot-2013.07/src/include/configs/nitrogen6x.h
 ===================================================================
---- u-boot-2013.07.orig/src/include/configs/nitrogen6x.h	2013-09-27 15:16:53.000000000 -0600
-+++ u-boot-2013.07/src/include/configs/nitrogen6x.h	2013-09-27 17:46:13.153332909 -0600
+--- u-boot-2013.10.orig/src/include/configs/nitrogen6x.h	2013-09-27 15:16:53.000000000 -0600
++++ u-boot-2013.10/src/include/configs/nitrogen6x.h	2013-09-27 17:46:13.153332909 -0600
 @@ -196,29 +196,52 @@
  
  #define CONFIG_DRIVE_TYPES CONFIG_DRIVE_SATA CONFIG_DRIVE_MMC
