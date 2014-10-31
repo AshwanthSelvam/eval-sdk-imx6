@@ -11,6 +11,13 @@ config UBOOT_RAM_ADDRS
 	help
 	    This is the address in RAM memory where u-boot is located.
 
+config UBOOT_FW_PRINTENV
+	bool "Bootloader user space environment tools"
+	default n
+	help
+	    Will compile a set of tools provided by the bootloader that will allow
+	    read/write bootloader environment from user space.
+
 comment "OneNAND flash memory settings"
 	depends on UBOOT_ONENAND_FLASH_MEMORY
 

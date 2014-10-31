@@ -2,7 +2,7 @@
 # Copyright (C) 2013 Ridgerun (http://www.ridgerun.com). 
 #$L$
 
-.PHONY: build clean scripts relflags real_build
+.PHONY: build clean scripts relflags real_build buildenv
 
 include ../../bsp/classes/rrsdk.class
 include $(CLASSES)/fetcher.defs
@@ -32,7 +32,17 @@ ifeq ($(CONFIG_UBOOT_NOR_FLASH_MEMORY),y)
 CPPFLAGS+= -DCONFIG_SYS_USE_NOR -DCONFIG_SYS_FLASH_SECT_SZ=$(CONFIG_UBOOT_FLASH_BLK_SIZE) -DPHYS_FLASH_SIZE=$(CONFIG_UBOOT_FLASH_SIZE)
 endif
 
-build: $(BOOTLOADER) rrpatched arch_build mach_build relflags uboot_built copy_images arch_post_build mach_post_build scripts
+build: $(BOOTLOADER) rrpatched arch_build mach_build relflags uboot_built copy_images arch_post_build mach_post_build scripts buildenv
+
+buildenv:
+ifeq ($(CONFIG_UBOOT_FW_PRINTENV),y)
+	$(V) $(MAKE) -C src HOSTCC=$(TOOLCHAIN_PREFIX)-gcc env $(QOUT) $(ERRQOUT)
+	$(V) cp src/tools/env/fw_printenv $(FSROOT)/usr/bin
+	$(V) ( cd $(FSROOT)/usr/bin ; rm -f fw_setenv ; ln -s fw_printenv fw_setenv )
+	$(V) if [ -e mach/fw_env.config ] ; then \
+	     cp mach/fw_env.config $(FSROOT)/etc; \
+	fi
+endif
 
 relflags:
 	$(V) echo $(CPPFLAGS) > relflags.tmp
