@@ -13,5 +13,14 @@ AUTOTOOLS_PARAMS = --prefix=$(DEVDIR)/fs/fsdev/usr
 #LDFLAGS="$(APPS_LDFLAGS)"  --with-ffmpeg-extra-configure="$(subst $(space), --extra-cflags=,$(subst ",, $(CONFIG_TOOLCHAIN_ARCH_FLAGS)))"
 
 include ../../../bsp/classes/rrsdk.class
+
+ifeq ($(CONFIG_FS_APPS_GSTREAMER_PLUGINS_FFMPEG_NEON),y)
+ifeq ($(CONFIG_TOOLCHAIN_HARDFP),y)
+AUTOTOOLS_PARAMS+= --with-ffmpeg-extra-configure="--target-os=linux --extra-cflags='-march=armv7-a -mfpu=neon -mfloat-abi=hard'"
+else
+AUTOTOOLS_PARAMS+= --with-ffmpeg-extra-configure="--target-os=linux --extra-cflags='-march=armv7-a -mfpu=neon -mfloat-abi=softfp'"
+endif
+endif
+
 include $(CLASSES)/gstreamer-plugin.class
 

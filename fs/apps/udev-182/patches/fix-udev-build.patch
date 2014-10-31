@@ -326,3 +326,38 @@ Index: udev-182/src/src/libudev.c
 +        }
 +        return 0;
 +}
+Index: udev-182/src/src/sd-daemon.c
+===================================================================
+--- udev-182.orig/src/src/sd-daemon.c	2012-02-14 07:44:10.391187515 -0600
++++ udev-182/src/src/sd-daemon.c	2013-10-11 08:46:01.255836429 -0600
+@@ -382,7 +382,7 @@
+         return 1;
+ }
+ 
+-_sd_export_ int sd_is_mq(int fd, const char *path) {
++/*_sd_export_ int sd_is_mq(int fd, const char *path) {
+ #if !defined(__linux__)
+         return 0;
+ #else
+@@ -417,7 +417,7 @@
+ 
+         return 1;
+ #endif
+-}
++}*/
+ 
+ _sd_export_ int sd_notify(int unset_environment, const char *state) {
+ #if defined(DISABLE_SYSTEMD) || !defined(__linux__) || !defined(SOCK_CLOEXEC)
+Index: udev-182/src/src/sd-daemon.h
+===================================================================
+--- udev-182.orig/src/src/sd-daemon.h	2012-02-14 07:44:19.638194109 -0600
++++ udev-182/src/src/sd-daemon.h	2013-10-11 08:46:29.739836577 -0600
+@@ -187,7 +187,7 @@
+   0 otherwise. If path is NULL a message queue name check is not
+   done. Returns a negative errno style error code on failure.
+ */
+-int sd_is_mq(int fd, const char *path);
++//int sd_is_mq(int fd, const char *path);
+ 
+ /*
+   Informs systemd about changed daemon state. This takes a number of

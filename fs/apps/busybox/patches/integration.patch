@@ -55,3 +55,15 @@ Index: busybox/src/include/applets.src.h
  IF_RM(APPLET_NOFORK(rm, rm, BB_DIR_BIN, BB_SUID_DROP, rm))
  IF_RMDIR(APPLET_NOFORK(rmdir, rmdir, BB_DIR_BIN, BB_SUID_DROP, rmdir))
  IF_ROUTE(APPLET(route, BB_DIR_SBIN, BB_SUID_DROP))
+Index: busybox/src/include/libbb.h
+===================================================================
+--- busybox.orig/src/include/libbb.h	2012-07-02 08:08:25.000000000 -0600
++++ busybox/src/include/libbb.h	2013-10-11 07:33:37.675813848 -0600
+@@ -40,6 +40,7 @@
+ #include <sys/poll.h>
+ #include <sys/ioctl.h>
+ #include <sys/mman.h>
++#include <sys/resource.h>
+ #include <sys/socket.h>
+ #include <sys/stat.h>
+ #include <sys/time.h>
