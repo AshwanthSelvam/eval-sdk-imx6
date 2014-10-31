@@ -1,0 +1,13 @@
+Index: kernel/linux-3.0.35-4.1.0/arch/arm/mach-mx6/board-mx6_nitrogen6x.c
+===================================================================
+--- kernel.orig/linux-3.0.35-4.1.0/arch/arm/mach-mx6/board-mx6_nitrogen6x.c	2014-07-02 16:16:48.000000000 -0600
++++ kernel/linux-3.0.35-4.1.0/arch/arm/mach-mx6/board-mx6_nitrogen6x.c	2014-09-11 15:25:25.802636023 -0600
+@@ -1712,7 +1712,7 @@
+ 		imx6q_add_ipuv3fb(i, &fb_data[i]);
+ 
+ 	imx6q_add_vdoa();
+-#if ! defined(CONFIG_MXC_VIDEO_GS2971) && ! defined(CONFIG_MXC_VIDEO_GS2971_MODULE) /* We need the pads for GS2971 */
++#if ! defined(CONFIG_MXC_VIDEO_GS2971) && ! defined(CONFIG_MXC_VIDEO_GS2971_MODULE) && ! defined(CONFIG_TC358743_AUDIO) /* We need the pads for GS2971 */
+ 	imx6q_add_lcdif(&lcdif_data);
+ #endif
+ 	imx6q_add_ldb(&ldb_data);

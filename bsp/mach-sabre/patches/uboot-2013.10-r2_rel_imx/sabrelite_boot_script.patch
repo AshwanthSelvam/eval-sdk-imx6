@@ -1,7 +1,7 @@
-Index: u-boot-2013.07/src/board/boundary/nitrogen6x/boot_script.txt
+Index: u-boot-2013.01/src/board/boundary/nitrogen6x/boot_script.txt
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ u-boot-2013.07/src/board/boundary/nitrogen6x/boot_script.txt	2013-06-12 16:49:05.485793818 -0600
++++ u-boot-2013.01/src/board/boundary/nitrogen6x/boot_script.txt	2013-06-12 16:49:05.485793818 -0600
 @@ -0,0 +1,59 @@
 +setenv bootargs $bootargs enable_wait_mode=off
 +setenv nextcon 0;

@@ -1,0 +1,89 @@
+Index: u-boot-2013.10/src/board/boundary/nitrogen6x/6x_bootscript.txt
+===================================================================
+--- u-boot-2013.10.orig/src/board/boundary/nitrogen6x/6x_bootscript.txt	2014-02-17 17:35:35.000000000 -0600
++++ u-boot-2013.10/src/board/boundary/nitrogen6x/6x_bootscript.txt	2014-10-20 11:02:48.693476980 -0600
+@@ -1,9 +1,18 @@
+-setenv bootargs enable_wait_mode=off
++if ${fs}load ${dtype} ${disk}:1 10800000 uEnv.txt ; then
++	setenv bootargs
++	env import -t 10800000 $filesize
++else
++    setenv bootargs enable_wait_mode=off
++fi
+ setenv nextcon 0;
+ 
+ i2c dev 1 ;
+ if i2c probe 0x50 ; then
+-	setenv bootargs $bootargs video=mxcfb${nextcon}:dev=hdmi,1280x720M@60,if=RGB24
++	if itest.s "xFULLHD" == "x$HDMIresolution"; then
++		setenv bootargs $bootargs video=mxcfb${nextcon}:dev=hdmi,1920x1080M@60,if=RGB32,fbpix=RGB32  dmfc=3
++	else
++		setenv bootargs $bootargs video=mxcfb${nextcon}:dev=hdmi,1280x720M@60,if=RGB24
++	fi
+ 	setenv fbmem "fbmem=28M";
+ 	setexpr nextcon $nextcon + 1
+ else
+@@ -67,17 +76,26 @@
+ 	setexpr nextcon $nextcon + 1 ;
+ done
+ 
+-setenv bootargs $bootargs $fbmem
+-setenv bootargs "$bootargs console=ttymxc1,115200 vmalloc=400M consoleblank=0 rootwait"
++setenv bootargs "$bootargs $fbmem mem=$mem"
++setenv bootargs "$bootargs console=ttymxc1,115200 vmalloc=400M consoleblank=0"
+ 
+ if itest.s x$bootpart == x ; then
+ 	bootpart=1
+ fi
+ 
+-if test "sata" = "${dtype}" ; then
+-	setenv bootargs "$bootargs root=/dev/sda$bootpart" ;
++if itest.s x$fspart == x ; then
++	fspart=2
++fi
++
++if itest.s x == "x$nfsroot"; then
++	if test "mmc" = "${dtype}" ; then
++		setenv bootargs "$bootargs root=/dev/mmcblk0p$fspart" ;
++	else
++		setenv bootargs "$bootargs root=/dev/sda$fspart" ;
++	fi
++	setenv bootargs "$bootargs  rootwait rootfstype=$rootfstype"
+ else
+-	setenv bootargs "$bootargs root=/dev/mmcblk0p$bootpart" ;
++	setenv bootargs "$bootargs root=/dev/nfs nfsroot=$nfsroot rw ip=$ip"
+ fi
+ 
+ dtbname="imx6";
+@@ -93,7 +111,7 @@
+ dtbname=${dtbname}${board}.dtb;
+ 
+ if itest.s x == x${bootdir} ; then
+-	bootdir=/boot/
++	bootdir=
+ fi
+ 
+ if ${fs}load ${dtype} ${disk}:${bootpart} 12000000 ${bootdir}$dtbname ; then
+@@ -109,11 +127,17 @@
+ 	echo "only CEA modes allowed on HDMI port";
+ fi
+ 
+-if ${fs}load ${dtype} ${disk}:${bootpart} 10800000 ${bootdir}uImage ; then
+-	if itest.s x$havedtb == x ; then
+-		bootm 10800000 ;
+-	else
+-		bootm 10800000 - 12000000
++if itest.s x == "x$netboot" ; then
++	if ${fs}load ${dtype} ${disk}:${bootpart} 10800000 ${bootdir}uImage ; then
++		if itest.s x$havedtb == x ; then
++			bootm 10800000 ;
++		else
++			bootm 10800000 - 12000000
++		fi
++	fi
++else
++	if dhcp $loadaddr ${serverip}:${kernelimage} ; then
++		bootm $loadaddr ;
+ 	fi
+ fi
+ echo "Error loading kernel image"
