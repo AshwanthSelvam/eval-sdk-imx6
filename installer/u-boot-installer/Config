@@ -37,13 +37,20 @@ config INSTALLER_MODE_SD_CARD_INSTALLER
 
 endchoice
 
-# Enable AutoDisplay detection
+# Enable 6x_bootscript installation detection
 
-config INSTALLER_AUTO_DISPLAY_DETECTION
-	bool "Automatic display configuration"
+config INSTALLER_USE_BOOT_SCRIPT
+	depends on INSTALLER_MODE_ATTACHED_BOARD
+	bool "Automatic bootargs configuration"
 	default n
 	help
-	    Automatically detects attached displays and configure the board according to that.
+	    Automatically detects attached displays, loads uEnv.txt and configure the board according to that.
+
+config INSTALLER_SET_FULL_HD
+	bool "Configure HDMI 1080p60"
+	default n
+	help
+		Set the HDMI output at 1080p60
 
 # Load Kernel via TFTP Options
 

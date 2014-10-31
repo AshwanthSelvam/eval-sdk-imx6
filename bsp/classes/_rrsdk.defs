@@ -34,7 +34,10 @@
 #! <b>LIBRARIES_OPTIONAL:</b> A list of optional libraries within the output of the build process that are intended to be placed on the target's final file system. This allows you to filter out non-essential content from the output of the build process that could be needed in the development file system (FSDEV variable) but not in the target's file system.
 #!
 #! <li>
-#! <b>DIRECTORIES:</b> A list of optional libraries within the output of the build process that are intended to be placed on the target's final file system. This allows you to filter out non-essential content from the output of the build process that could be needed in the development file system (FSDEV variable) but not in the target's file system.
+#! <b>DIRECTORIES:</b> A list of directories intended to be placed on the target's final file system.
+#!
+#! <li>
+#! <b>RO_SYMLINKS: </b> A list of directories intended to be placed on the target's final file system. If the file system is going to be read-only it needs to be placed as a symbolic link pointing to a read-write partition, in this case /mnt/. More info at: https://developer.ridgerun.com/wiki/index.php/Read_only_target_file_system
 #!
 #! <li>
 #! <b>OTHERS:</b> A list of other files (found within the directory assigned to the "OTHER" variable) within the output of the build process that are intended to be placed on the target's final file system. This allows you to filter out non-essential content from the output of the build process that could be needed in the development file system (FSDEV variable) but not in the target's file system. 
@@ -150,6 +153,10 @@ ifneq ($(MAKECMDGOALS),sim)
 	    mkdir -p $(FSROOT)/$$directories || \
 	     { echo "Failed to create directory $$directories" ; exit -1 ; } ; \
 	done
+	$(V)for ro_symlinks in $(RO_SYMLINKS) ; do \
+	    ln -s -f /mnt/$(RO_SYMLINKS) $(FSROOT)$(RO_SYMLINKS) || \
+	     { echo "Failed to create read only symbolic links" ; exit -1 ; } ; \
+	done 
 	$(V)for others in $(OTHERS) ; do \
 	    install -Dm 644 $(FSDEVROOT)/$$others $(FSROOT)/$$others || \
 	     { echo "Failed to install $$other" ; exit -1 ; } ; \

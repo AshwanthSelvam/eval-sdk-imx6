@@ -40,6 +40,13 @@ config FS_FSROOT
 	  file system can be found in /opt/target_file_systems/dm385sdk/fs.  You also
 	  should change busybox install directory CONFIG_PREFIX to "arm".
 
+config FS_READ_ONLY
+        bool "Read Only File System"
+        help
+	  Mounts file system as Read only, also copy content from: DEVDIR/fs/overlay-ro into file system
+	  It is recommended to use make remove_fs when selecting/deselecting this option.
+	  More information at: [ TO DO: URL to developers wiki]
+
 comment "File system contents ---"
 menu "Select target's file system software"
 

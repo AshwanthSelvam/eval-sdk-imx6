@@ -1,0 +1,19 @@
+Index: kernel/linux-3.0.35-4.1.0/drivers/media/platform/mxc/capture/gs2971.c
+===================================================================
+--- kernel.orig/linux-3.0.35-4.1.0/drivers/media/platform/mxc/capture/gs2971.c	2014-07-02 16:16:49.000000000 -0600
++++ kernel/linux-3.0.35-4.1.0/drivers/media/platform/mxc/capture/gs2971.c	2014-10-24 13:16:08.642149767 -0600
+@@ -717,12 +717,12 @@
+ 		 * EAV/SAV codes, not 8
+ 		 */
+ 		p->if_type = V4L2_IF_TYPE_BT1120_PROGRESSIVE_SDR;
+-		p->u.bt656.mode = V4L2_IF_TYPE_BT656_MODE_BT_10BIT;
++		p->u.bt656.mode = V4L2_IF_TYPE_BT656_MODE_BT_8BIT;
+ 		p->u.bt656.bt_sync_correct = 0;	// Use embedded sync
+ 		p->u.bt656.nobt_vs_inv = 1;
+ //		p->u.bt656.nobt_hs_inv = 1;
+ 	}
+-	p->u.bt656.latch_clk_inv = 0;	/* pixel clk polarity */
++	p->u.bt656.latch_clk_inv = 1;	/* pixel clk polarity */
+ 	p->u.bt656.clock_min = 6000000;
+ 	p->u.bt656.clock_max = 180000000;
+ 	return 0;

@@ -157,6 +157,7 @@ SELECTED:
     while (<FD>) {
 	print REPLACEMENT unless /$_[1]\?=/;
 	print REPLACEMENT "$_[1]?=$lastselection\n" if /BOOTLOADER\?=/ ;
+	delete $ENV{$_[1]};
     }
     
     system "mv /tmp/Make.conf $DEVDIR/bsp/mach/Make.conf";

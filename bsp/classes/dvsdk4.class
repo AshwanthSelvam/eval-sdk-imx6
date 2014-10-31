@@ -47,7 +47,9 @@ DVSDK_TARGETS+=ce_check_for_rebuild dmai_v4
 export BUILDING_SOFTWARE_OUTSIDE_DEVDIR=y
 
 build: dvsdk rrpatched rrconfig coprocessors.init 
-	@# We re-run make since this time Rules.make exist, so we can pull his variables in
+	$(V) # Start cleaning up CE to ensure all packages build against the same CE
+	$(V) if [ ! -e ce_build ] ; then $(MAKE) ce_check_for_rebuild_clean ; fi
+	$(V) # We re-run make since this time Rules.make exist, so we can pull his variables in
 	$(V)$(MAKE) $(DVSDK_TARGETS)
 
 #============================================================================================
@@ -111,7 +113,7 @@ distclean: clean dvsdk_distclean rrfetched_clean
 install: targets_install rrsdk_install dvsdk_cmdline
 	$(V)$(MAKE) -C $(DEVDIR)/fs depmod
 
-targets_install: build
+targets_install:
 	@# We re-run make since this time Rules.make exist, so we can pull his variables in
 	$(V)$(MAKE) $(DVSDK_TARGETS:=_install)
 

@@ -50,9 +50,10 @@ for APP in $APPS
 do
 	if ${DEVDIR}/bsp/scripts/metainfo -c -p $APP
 	then			
-		COMPONENTS="$COMPONENTS $APP"
-	else
-		COMPONENTS="$COMPONENTS"
+		if [ "$APP" != "${DEVDIR}/fs/apps/sysvinit-2011.5.11" ]
+                then
+                        COMPONENTS="$COMPONENTS $APP"
+                fi  
 	fi
 done
 
@@ -118,25 +119,15 @@ then
 	echo "*** WARNING: failed to rename ${OUTPUT_TMP} -> ${OUTPUT}"
 fi
 
-# Eliminate SysVinit copyrights
-#sed -i '/sysvinit/d' ${OUTPUT}
-
-# create empty list of all html files
-HTMLS=""
-
-# add all html files
-HTMLS="$HTMLS copyrights copyrights-short copyrights-pico summary table soup"
-
 # create the install directory
 readonly INSTALL_DIR="${DEVDIR}/fs/fs/usr/share/copyrights"
 mkdir -p ${INSTALL_DIR}
 
 # create the html files and install them in $(FSROOT)/usr/share
-for HTML in $HTMLS
+for XSL in $(ls *.xsl)
 do
-	xsltproc -o $HTML.html  $HTML.xsl $OUTPUT
-	cp $HTML.html ${INSTALL_DIR}
-	rm $HTML.html
+	xsltproc -o ${XSL%.xsl}.html $XSL $OUTPUT
+	mv -f ${XSL%.xsl}.html ${INSTALL_DIR}
 done
 
 exit 0

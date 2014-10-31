@@ -47,11 +47,9 @@ endif
 build:
 
 cmdline:
-ifeq ($(CONFIG_FS_TARGET_SD),y)
 	$(V)echo -n "root=$(TARGET_SD_ROOTFS_DEVICE) rootdelay=2 " >>$(CMDLINEFILE)
   ifeq ($(CONFIG_INSTALLER_SD_ROOTFS_TYPE_EXT3),y)
 	$(V)echo -n "rootfstype=ext3 " >>$(CMDLINEFILE)
   else
 	$(V)$(ECHO) "$(WARN_COLOR)Warning:$(NORMAL_COLOR) not defining boot parameters for SD card root fs since we don't know what fs type you have... I hope you know what you are doing!"
   endif
-endif

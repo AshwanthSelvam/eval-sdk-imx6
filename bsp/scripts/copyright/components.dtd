@@ -1,19 +1,20 @@
 <!--Copyright (C) 2013 Ridgerun (http://www.ridgerun.com). -->
 <!ELEMENT components (component)*>
-<!ELEMENT component (name,version,releaseDate?,manufacturer,summary,link,issues?,license,changed*,remark?)>
+<!ELEMENT component (name,version,releaseDate?,manufacturer,summary,link,downloadLink?,issues?,license,changed*,remark?)>
 <!ELEMENT name (#PCDATA)>
 <!ELEMENT version (#PCDATA)>
 <!ELEMENT releaseDate (#PCDATA)>
 <!ELEMENT manufacturer (#PCDATA)>
 <!ELEMENT summary (#PCDATA)>
 <!ELEMENT link (#PCDATA)>
+<!ELEMENT downloadLink (#PCDATA)>
 <!ELEMENT issues ((link | remark)+)>
 <!ELEMENT changed (#PCDATA)>
 <!ELEMENT license ((link|text)+)>
 <!ELEMENT text (#PCDATA)>
 <!-- Properitary is used for non standard license which require a notice in the software description.
      Private is used for non standard license which must not be published.
-     KS = KarlStorz internal -->
+     RR = RidgeRun license -->
 <!ELEMENT remark (#PCDATA)>
 <!ATTLIST license
 	type (	

@@ -108,3 +108,10 @@ cmdline:
 		fi; \
 	    fi ; \
 	done
+
+cmdline_fs:
+	if [ -d sd ] ; then \
+		$(ECHO) "Entering sd..." ; \
+		$(MAKE) -C sd $(MAKE_CALL_PARAMS) cmdline || { echo "Error building cmdline at sd" ; exit 1 ; } ; \
+		exit 0; \
+	fi

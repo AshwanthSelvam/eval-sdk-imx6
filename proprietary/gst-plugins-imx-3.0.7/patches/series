@@ -1,0 +1,4 @@
+fix-build.patch
+adding-perf.patch
+queue_segfault.patch
+add_BGR_pix_fmt_support.patch

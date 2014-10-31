@@ -2,8 +2,6 @@
 # Copyright (C) 2013 Ridgerun (http://www.ridgerun.com). 
 ##$L$
 
-include ../../../bsp/classes/rrsdk.class
-
 PKG_URL=http://dbus.freedesktop.org/releases/dbus/
 PKG_TARBALL=dbus-1.4.20.tar.gz
 PKG_SHA1SUM=9761eca23c0e6ea4ad822d92748703f9a0f58858
@@ -40,5 +38,6 @@ DIRECTORIES= /usr/share/dbus-1/{services,system-services}\
 	    /etc/dbus-1/{session.d,system.d}\
 	    /var/run/dbus
 
+include ../../../bsp/classes/rrsdk.class
 include $(CLASSES)/autotools.class
 

@@ -29,6 +29,7 @@ my $rootfs_mounted     = 0;
 my $in_cleanup         = 0;
 my $GENERATE_INSTALLER = $CONFIG_INSTALLER_MODE_SD_CARD_INSTALLER;
 my $MIN_NAME;
+my $HDMI_FULLHD = $CONFIG_INSTALLER_SET_FULL_HD;
 
 # Pre-Bootloader type (some platforms use UBL and others X-LOADER)
 if ($CONFIG_UBOOT_USE_XLOADER) {
@@ -55,7 +56,7 @@ my $NEED_SDCARD = 'n';
 if (  $CONFIG_INSTALLER_MODE_SD_CARD eq 'y' 
 	|| ( $TARGET_FS_TYPE eq "sd" && ($INSTALLATION_MODE eq 'fs' || $INSTALLATION_MODE eq 'all' ))
 	|| ( ($INSTALLATION_MODE eq "kernel" || $INSTALLATION_MODE eq 'all' ) && $TFTP_KERNEL ne 'y' )
-	|| $CONFIG_INSTALLER_AUTO_DISPLAY_DETECTION eq 'y' ){
+	|| $CONFIG_INSTALLER_USE_BOOT_SCRIPT eq 'y' ){
 		$NEED_SDCARD = 'y';
 	}
 	
@@ -462,17 +463,45 @@ sub install_ubootEnv {
     open( ARGS, "<$IMAGEDIR/cmdline" );
     my $BOOTARGS = <ARGS>;
     close(ARGS);
+ 
     open( CMD, ">$IMAGEDIR/uEnv.txt" );
-    print CMD "bootargs=$BOOTARGS\n";
+    
+    #Set variables
+    print CMD "mem=864M\n";
+    if ( $BOOTARGS =~ s/(nfsroot=\S*\s)// ){ # Search for "nfsroot=... " occurrence, if it is in the string, its going to be removed and stored in $1
+		print CMD $1 . "\n";
+	}
+	if ( $BOOTARGS =~ s/(ip=\S*\s)// ){ # Search for "ip=... " occurrence, if it is in the string, its going to be removed and stored in $1
+		print CMD $1 . "\n";
+	}
+	if ( $BOOTARGS =~ s/(rootfstype=\S*\s)// ){ # Search for "rootfstype=... " occurrence, if it is in the string, its going to be removed and stored in $1
+		print CMD $1 . "\n";
+		#Asuming file system in SD card, usigng default fs partition as p2. If this ever changes set the fspart variable to the proper value
+		#print CMD "fspart=x\n"
+	}
+	
+	$BOOTARGS =~ s/(console=\S*\s)//; # Search for "console=... " occurrence, if it is in the string, its going to be removed
+	$BOOTARGS =~ s/(root=\S*\s)//; # Search for "root=... " occurrence, if it is in the string, its going to be removed
+	$BOOTARGS =~ s/(rw\s)//; # Search for "rw " occurrence, if it is in the string, its going to be removed
+    
+    print CMD "Bootargs=$BOOTARGS\n";
+    
     if ( $TFTP_KERNEL eq 'y' ) { # Boot via TFTP
 		# Set boards iup method
 		set_ip_method();
-			print CMD
-		"uenvcmd=echo Running uenvcmd ...; $IP_METHOD;setenv serverip $HOST_IP; setenv loadaddr $CONFIG_INSTALLER_LOAD_ADDRS;tftp $TFTP_KERNEL_IMAGE; bootm\n";
+		#	print CMD
+		#"uenvcmd=echo Running uenvcmd ...; $IP_METHOD;setenv serverip $HOST_IP; setenv loadaddr $CONFIG_INSTALLER_LOAD_ADDRS;tftp $TFTP_KERNEL_IMAGE; bootm\n";
+		print CMD "netboot=1\n";
+		print CMD "serverip=$HOST_IP\n";
+		print CMD "loadaddr=$CONFIG_INSTALLER_LOAD_ADDRS\n";
+		print CMD "kernelimage=$TFTP_KERNEL_IMAGE\n";
 	}
 	else {
-			print CMD
-		"uenvcmd=echo Running uenvcmd ...; run loaduimage;bootm $CONFIG_INSTALLER_LOAD_ADDRS\n";
+		#	print CMD
+		#"uenvcmd=echo Running uenvcmd ...; run loaduimage;bootm $CONFIG_INSTALLER_LOAD_ADDRS\n";
+	}
+	if ( $HDMI_FULLHD eq 'y' ) { # Configure HDMI 1080p60
+		print CMD "HDMIresolution=FULLHD\n";
 	}
     close(CMD);
     system("mkdir -p $LOG_DIRECTORY");
@@ -486,9 +515,9 @@ sub install_ubootEnv {
 # install_ubootEnv           #
 # ========================== #
 sub install_bootscript {
-	if ($DISPLAY_AUTODETECT eq 'y' ) {
-		print BOLD BLUE "  Copying boot_script into the SD...\n";
-		cmd_echo("sudo cp $IMAGEDIR/boot_script $IMAGEDIR/boot/boot_script");
+	if ($USE_BOOT_SCRIPT eq 'y' || $CONFIG_INSTALLER_MODE_SD_CARD eq 'y') {
+		print BOLD BLUE "  Copying bootscript into the SD...\n";
+		cmd_echo("sudo cp $IMAGEDIR/6x_bootscript $IMAGEDIR/boot/6x_bootscript");
 	}
 }
 

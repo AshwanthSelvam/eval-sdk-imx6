@@ -17,9 +17,7 @@ include $(DEVDIR)/bsp/mach/Make.conf
 # apps, toolchain and rrapps goes first as they may install generic
 # definitions arch and mach should be in that order to install custom
 # files myapps is last
-FS_COMPONENTS ?= host-apps apps $(DEVDIR)/toolchain rrapps arch mach proprietary_src yocto myapps
-
-FS_COMPONENTS_UNPATCH ?= host-apps apps rrapps proprietary_src yocto myapps
+FS_COMPONENTS ?= host-apps apps $(DEVDIR)/toolchain rrapps arch mach proprietary_src myapps
 
 # By default rrsdk class run ldconfig on install, we can speed up the process
 # when building the whole fs by running until the end
@@ -40,6 +38,7 @@ networkconfig:
 	$(V) if grep -q BSP_NET_HAS_NET arch/base/Makefile ; then \
 	    $(ECHO) "\n$(WARN_COLOR)WARNING:$(NORMAL_COLOR) Looks like you have some deprecated network funcionality on $(FSROOT)/arch/base. Be aware is being ignored\n" ; \
 	fi
+ifeq ($(CONFIG_FS_READ_ONLY),)
 ifeq ($(CONFIG_BSP_NET_HAS_NET),y)
 	$(V)mkdir -p $(FSROOT)/etc/network/ $(FSROOT)/var/run/ $(QOUT)
 	$(V)ln -sf /var/run $(FSROOT)/etc/network/
@@ -111,6 +110,7 @@ endif # IPV6_SUPPORT
 endif #USB0
 
 endif # HAS_NET
+endif # FS_READ_ONLY
 
 depmod:
 	$(V) if [ -d $(FSROOT)/lib/modules/$(KERNELVERSION) ] ; then \
@@ -138,6 +138,10 @@ build: build_start $(FSROOT) $(FSDEVROOT) $(foreach COMP, $(FS_COMPONENTS), $(CO
 	$(V) $(ECHO) "Installing Overlay"
 	$(V) $(call copy_dir,overlay,$(FSROOT))
 	$(V) $(DEVDIR)/bsp/scripts/stamp_build > $(FSROOT)/etc/version
+ifeq ($(CONFIG_FS_READ_ONLY),y)
+	$(V) $(ECHO) "Copying read only overlay"
+	$(V) $(call copy_dir,overlay-ro,$(FSROOT))
+endif
 ifeq ($(CONFIG_FS_STRIPFS),y)
 	$(V) $(ECHO) "Stripping symbols from binary files"
 	$(V) for i in `find $(FSROOT)` ; \
@@ -172,6 +176,11 @@ endif
 cmdline: build_start $(foreach COMP, $(FS_COMPONENTS), $(COMP)_cmdline)
 	$(V) $(ECHO) "Building file system target image(s)"
 	$(MAKE) -C fstargets $(MAKE_CALL_PARAMS) cmdline || { exit 1 ; } ;
+	$(V) echo -n " $(CONFIG_BSP_EXTRA_BOOT_ARGS) ">>$(CMDLINEFILE)
+
+cmdline_fs: build_start $(foreach COMP, $(FS_COMPONENTS), $(COMP)_cmdline)
+	$(V) $(ECHO) "Building file system target image(s)"
+	$(MAKE) -C fstargets $(MAKE_CALL_PARAMS) cmdline_fs || { exit 1 ; } ;
 	$(V) echo -n " $(CONFIG_BSP_EXTRA_BOOT_ARGS) ">>$(CMDLINEFILE)
 
 defs:
@@ -286,7 +295,7 @@ patch: $(foreach COMP, $(FS_COMPONENTS), $(COMP)_patch)
 
 buildfs: defs $(foreach COMP, $(FS_COMPONENTS), $(COMP)_buildfs)
 
-unpatch :$(foreach COMP, $(FS_COMPONENTS_UNPATCH), $(COMP)_unpatch)
+unpatch: $(foreach COMP, $(FS_COMPONENTS), $(COMP)_unpatch)
 
 clean: defs $(foreach COMP, $(FS_COMPONENTS), $(COMP)_clean)
 	$(V) rm -Rf config.site Apps.defs hostreqs $(FSROOT) $(FSDEVROOT)

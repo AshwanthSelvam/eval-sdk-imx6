@@ -25,7 +25,7 @@ APPS_CFLAGS+=-I$(GST_PLUGINS_IMX)/src/inc/{common,plugin}
 APPS_CFLAGS+=-I$(GST_PLUGINS_IMX)/src/libs/{gstbufmeta,gstnext,gstsutils,me,sconf,vss}
 APPS_CFLAGS+=-I$(KERNEL_INCLUDE)
 
-AUTOTOOLS_PARAMS=LDFLAGS="$(APPS_LDFLAGS)" CFLAGS="$(APPS_CFLAGS)" PLATFORM=MX6 --disable-x11
+AUTOTOOLS_PARAMS=LDFLAGS="$(APPS_LDFLAGS)" CFLAGS="$(APPS_CFLAGS) -lrt" PLATFORM=MX6 --disable-x11
 
 
 BINARIES= /usr/bin/gplay
