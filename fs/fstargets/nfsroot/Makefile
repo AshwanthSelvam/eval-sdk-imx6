@@ -56,7 +56,7 @@ build:
 cmdline:
 	$(V)echo -n "root=/dev/nfs nfsroot=$(HOST_IP):$(FSROOT) rw ip=" >>$(CMDLINEFILE)
 ifneq ($(CONFIG_BSP_NET_ETH0_USE_DHCP),y)
-	$(V)echo -n "$(CONFIG_BSP_NET_ETH0_IPADDR):::$(CONFIG_BSP_NET_ETH0_NETMASK)::$(INTERFACE) " >>$(CMDLINEFILE)
+	$(V)echo -n "$(CONFIG_BSP_NET_ETH0_IPADDR):::$(CONFIG_BSP_NET_ETH0_NETMASK)::$(INTERFACE) rootdelay=1 " >>$(CMDLINEFILE)
 else
 	$(V)echo -n "dhcp " >>$(CMDLINEFILE)
 endif
